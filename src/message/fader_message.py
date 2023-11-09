@@ -1,23 +1,27 @@
 from __future__ import annotations
-from message import DeskMessage
-from desk.channel import ChannelId, Group
-from types import List
+from message import DeskMessage, MessageDirection, MessageType
+from desk.channel import ChannelId, Group, Channel
+from desk import Desk
+from typing import List
 
 class FaderMessage(DeskMessage):
-  def __init__(self, channelId: ChannelId, value):
-    super(self.generate_bytes(channelId, value))
+  def __init__(self, channelId: ChannelId, data, dir: MessageDirection = MessageDirection.SET_TO_HOST):
+    super(dir, MessageType.CHANNEL)
     self.channelId: ChannelId = channelId,
-    self.value = value
+    self.data = data
 
-  def generate_bytes(channelId: ChannelId, value: int):
+  def bytes(self):
     bytes = []
-    bytes.append(0xB0 + channelId.get_MIDI_channel())
-    bytes.append(0xB0 + channelId.get_MIDI_channel())
-    bytes.append(value)
+    bytes.append(0xB0 + self.channelId.get_MIDI_channel())
+    bytes.append(0xB0 + self.channelId.get_MIDI_channel())
+    bytes.append(self.value)
     return bytes
   
   def from_bytes(bytes: List[int]) -> FaderMessage:
     channelId: ChannelId = ChannelId.from_control_message_bytes(bytes[0:1])
     value = bytes[2]
-    return FaderMessage(channelId, value)
+    return FaderMessage(channelId, value, MessageDirection.GET_FROM_HOST)
   
+  def update_desk(self, desk: Desk):
+    channel = desk.get_channel(self.channelId)
+    channel.fader = self.data

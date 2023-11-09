@@ -1,2 +1,2 @@
-from src.message.message import DeskMessage
-from src.message.fader_message import FaderMessage
+from message.message import DeskMessage, MessageDirection, MessageType
+from message.fader_message import FaderMessage

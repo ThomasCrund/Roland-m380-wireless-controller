@@ -89,13 +89,23 @@ class ChannelId:
 class Channel:
   def __init__(self, id: ChannelId):
     self._id = id
-    self._fader = None
-    self._mute = None
+    self._fader: int = None
+    self._mute: bool = None
 
-  def setFader(self, value):
-    self._fader = value
+  @property
+  def fader(self) -> int:
+    return self._fader
   
-  def setMute(self, value):
+  @fader.setter
+  def setFader(self, value: int):
+    self._fader = value
+
+  @property
+  def mute(self) -> bool:
+    return self._mute
+  
+  @mute.setter
+  def setMute(self, value: bool):
     self._mute = value
 
   def __eq__(self, __value: object) -> bool:
