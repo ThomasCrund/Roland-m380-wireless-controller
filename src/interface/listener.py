@@ -16,7 +16,7 @@ class Listener(threading.Thread):
     self.deskController: DeskController = deskController
 
   def run(self):
-    self.port = mido.open_input(self.inputPortName)
+    self.port = mido.open_input(self.inputPortName, virtual = True)
     while (True):
       msg = self.port.receive(False)
       self.handle_message(msg)

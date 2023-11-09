@@ -1,4 +1,4 @@
-from src.desk.channel import ChannelId, Group
+from desk.channel import ChannelId, Group
 
 def print_channelId(channelId: ChannelId):
   print(channelId.group, channelId.deskChannel, hex(channelId.get_MIDI_channel()), hex(channelId.get_MIDI_controller()))
@@ -10,6 +10,6 @@ def main():
   print_channelId(b)
   c = ChannelId.from_control_message_bytes([0xB0, 0x05])
   print_channelId(c)
-  print(a == b)
+  print(a == c)
 if __name__ == '__main__':
   main()
