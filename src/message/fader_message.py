@@ -5,16 +5,16 @@ from desk import Desk
 from typing import List
 
 class FaderMessage(DeskMessage):
-  def __init__(self, channelId: ChannelId, data, dir: MessageDirection = MessageDirection.SET_TO_HOST):
-    super(dir, MessageType.CHANNEL)
-    self.channelId: ChannelId = channelId,
+  def __init__(self, channelId: ChannelId, data, direction: MessageDirection = MessageDirection.SET_TO_HOST):
+    super().__init__(direction, MessageType.CHANNEL)
+    self.channelId: ChannelId = channelId
     self.data = data
 
   def bytes(self):
     bytes = []
     bytes.append(0xB0 + self.channelId.get_MIDI_channel())
-    bytes.append(0xB0 + self.channelId.get_MIDI_channel())
-    bytes.append(self.value)
+    bytes.append(self.channelId.get_MIDI_controller())
+    bytes.append(self.data)
     return bytes
   
   def from_bytes(bytes: List[int]) -> FaderMessage:

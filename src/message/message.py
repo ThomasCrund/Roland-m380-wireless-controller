@@ -11,22 +11,22 @@ class MessageDirection(Enum):
   GET_FROM_HOST = 3
 
 class MessageType(Enum):
-  CHANNEL = 1
-  INPUT_PATCHBAY = 2
-  OUTPUT_PATCHBAY = 3
-  RECORDING = 4
-  MUTE_GROUP = 5
-  MONITOR = 6
-  DCA_GROUP = 7
-  TALKBACK = 8
+  CHANNEL = "CHANNEL"
+  INPUT_PATCHBAY = "INPUT_PATCHBAY"
+  OUTPUT_PATCHBAY = "OUTPUT_PATCHBAY"
+  RECORDING = "RECORDING"
+  MUTE_GROUP = "MUTE_GROUP"
+  MONITOR = "MONITOR"
+  DCA_GROUP = "DCA_GROUP"
+  TALKBACK = "TALKBACK"
 
 class DeskMessage(ABC):
-  def __init__(self, dir: MessageDirection, type: MessageType):
+  def __init__(self, dir: MessageDirection, messageType: MessageType):
     self.dir = dir
-    self.type = type
+    self.messageType = messageType
 
   def get_msg(self):
-    return mido.Message.from_bytes(bytes)
+    return mido.Message.from_bytes(self.bytes())
   
   @abstractmethod
   def bytes(self):
