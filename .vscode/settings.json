@@ -1,7 +1,9 @@
 {
     "editor.tabSize": 2,
     "cSpell.words": [
+        "aiohttp",
         "eventlet",
+        "gevent",
         "mido",
         "PATCHBAY",
         "TALKBACK"

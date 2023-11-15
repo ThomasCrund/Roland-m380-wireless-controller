@@ -1,6 +1,8 @@
-from server import Server
+from web_interface import Server
 from desk import Desk, DeskController, DeskConnection
 import time
+import asyncio
+import gevent
 
 class App:
 
@@ -12,15 +14,9 @@ class App:
 
   def run(self):
     print("Starting App")
-    self.server.start()
-
-    try:
-      while True:
-        self.server.send_channel()
-        self.deskConnection.update()
-        time.sleep(0.005)
-    except KeyboardInterrupt:
-      print("End Logger")
+    # self.server.start_background_task(self.deskController.run)
+    self.server.run()
+    
 
   def exit_application(self, num, stack):
     print("Closing App")

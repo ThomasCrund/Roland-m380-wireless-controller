@@ -18,14 +18,14 @@ function App() {
       setIsConnected(false);
     }
 
-    function onFader(data = "Nothing") {
+    function onFader(data) {
       console.log('fader', data)
     }
 
     console.log("Register")
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('faders', onFader);
+    socket.on('channels', onFader);
     socket.on('message', (msg) => {
       console.log("message: " + msg)
     });

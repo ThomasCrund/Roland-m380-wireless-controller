@@ -3,11 +3,11 @@ from enum import Enum
 from typing import List
 
 class Group(Enum):
-  FADER = 1
-  DCA = 2
-  MTX = 3
-  AUX = 4
-  MAIN = 5
+  FADER = "FADER"
+  DCA = "DCA"
+  MTX = "MTX"
+  AUX = "AUX"
+  MAIN = "MAIN"
 
 class ChannelId:
   def __init__(self, group: Group, deskChannel: int):

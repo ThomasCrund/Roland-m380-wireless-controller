@@ -14,11 +14,15 @@ def my_message(data):
     sio.emit('my response', {'response': 'my response'})
 
 @sio.event
+def channels(data):
+    print(data)
+
+@sio.event
 def disconnect():
     print('disconnected from server')
 
-sio.connect('http://localhost:5000')
+sio.connect('http://localhost:8080', transports='websocket')
 while True:
   time.sleep(3)
-  print("sending to 'my_message': 'test")
-  sio.emit('my_message', 'test')
+#   print("sending to 'my_message': 'test")
+#   sio.emit('my_message', 'test')

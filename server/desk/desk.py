@@ -17,3 +17,10 @@ class Desk:
     newChannel = Channel(channelId)
     self.channels.append(newChannel)
     return newChannel
+  
+  def initialise_group(self, group: Group, startId: int, endId: int):
+    for i in range(startId, endId + 1):
+      self.channels.append(Channel(ChannelId(group, i)))
+
+  def initialise_channels(self):
+    self.initialise_group(Group.FADER, 1, 48)
