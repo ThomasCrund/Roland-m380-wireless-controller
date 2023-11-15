@@ -1,43 +1,74 @@
 import './App.css';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+// import useWebSocket, { ReadyState } from 'react-use-websocket';
 import React, { useState, useCallback, useEffect } from 'react';
+import { socket } from './socket';
 
 function App() {
-  const [messageHistory, setMessageHistory] = useState([]);
+  const [isConnected, setIsConnected] = useState(socket.connected);
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl);
 
   useEffect(() => {
-    if (lastMessage !== null) {
-      setMessageHistory((prev) => prev.concat(lastMessage));
+    function onConnect() {
+      console.log('Connect');
+      setIsConnected(true);
     }
-  }, [lastMessage, setMessageHistory]);
 
-  const handleClickSendMessage = useCallback(() => sendMessage('Hello'), []);
+    function onDisconnect() {
+      console.log('Disconnect');
+      setIsConnected(false);
+    }
 
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: 'Connecting',
-    [ReadyState.OPEN]: 'Open',
-    [ReadyState.CLOSING]: 'Closing',
-    [ReadyState.CLOSED]: 'Closed',
-    [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
-  }[readyState];
+    function onFader(data = "Nothing") {
+      console.log('fader', data)
+    }
+
+    console.log("Register")
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('faders', onFader);
+    socket.on('message', (msg) => {
+      console.log("message: " + msg)
+    });
+
+    socket.onAny((event, ...args) => {
+      console.log(`got ${event}`);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
+    const engine = socket.io.engine;
+    engine.on("packet", ({ type, data }) => {
+      console.log("packet", type, data)
+    });
+
+    engine.once("upgrade", () => {
+      // called when the transport is upgraded (i.e. from HTTP long-polling to WebSocket)
+      console.log(engine.transport.name); // in most cases, prints "websocket"
+    });
+
+    return () => {
+      console.log("Deregister")
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('faders', onFader);
+    };
+  }, []);
+
+  const handleClickSendMessage = useCallback(() => socket.send('Hello'), []);
+  
+  console.log(isConnected)
+  console.log(socket.listenersAny())
 
   return (
     <div>
       <button
         onClick={handleClickSendMessage}
-        disabled={readyState !== ReadyState.OPEN}
+        disabled={!isConnected}
       >
         Click Me to send 'Hello'
       </button>
-      <span>The WebSocket is currently {connectionStatus}</span>
-      {lastMessage ? <span>Last message: {lastMessage.data}</span> : null}
-      <ul>
-        {messageHistory.map((message, idx) => (
-          <span key={idx}>{message ? message.data : null}</span>
-        ))}
-      </ul>
+      Connected: {isConnected ? "Connected" : "Not Connected"}
     </div>
   );
 }

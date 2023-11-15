@@ -5,7 +5,7 @@ import time
 class App:
 
   def __init__(self):
-    self.server = Server()
+    self.server: Server = Server()
     self.desk = Desk()
     self.deskConnection = DeskConnection("2- RSS M-400 0", "2- RSS M-400 1")
     self.deskController = DeskController(self.desk, self.deskConnection)
@@ -13,10 +13,12 @@ class App:
   def run(self):
     print("Starting App")
     self.server.start()
+
     try:
       while True:
+        self.server.send_channel()
         self.deskConnection.update()
-        time.sleep(1)
+        time.sleep(0.005)
     except KeyboardInterrupt:
       print("End Logger")
 
