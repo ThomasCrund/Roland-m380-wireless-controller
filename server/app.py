@@ -2,7 +2,6 @@ from web_interface import Server
 from desk import Desk, DeskController, DeskConnection
 import time
 import asyncio
-import gevent
 
 class App:
 
@@ -14,7 +13,6 @@ class App:
 
   def run(self):
     print("Starting App")
-    # self.server.start_background_task(self.deskController.run)
     self.server.run()
     
 

@@ -1,37 +1,37 @@
 from threading import Thread
-import socketio
-from aiohttp import web
 from desk import Channel
 from web_interface.channel_interface import channels_to_JSON
-
-import time
+from flask import Flask, render_template, request
+from flask_socketio import SocketIO
+from random import random
 
 class Server:
   
   def __init__(self, debug = False):
     # Thread.__init__(self)
-    self.sio = socketio.AsyncServer(logger=True, cors_allowed_origins='*')
-    self.debug = debug
+    self.app = Flask(__name__)
+    self.app.config['SECRET_KEY'] = 'donsky!'
+    self.socketio = SocketIO(self.app, cors_allowed_origins='*')
+
     # self.app.debug = debug
     # self.setDaemon(True)
-    self.sio.on('message', handler=self.handle_message)
-    self.sio.on('my_message', handler=self.my_message)
+    # self.socketio.on('message', handler=self.handle_message)
+    # self.socketio.on('my_message', handler=self.my_message)
     # self.sio.on('connect', handler=self.handle_message)
-    self.app = web.Application()
-    self.sio.attach(self.app)
+    self.threads = []
 
   def run(self):
-    web.run_app(self.init_app())
+    self.threads.append(self.socketio.start_background_task(self.background_task))
+    self.socketio.run(self.app)
 
   def stop(self):
     pass
 
-  def test_task(self):
-    print("background")
-
-  async def init_app(self):
-    self.sio.start_background_task(self.test_task)
-    return self.app
+  def background_task(self):
+    while True:
+      self.socketio.sleep(1)
+      print("background")
+      self.socketio.emit('channels', { 'test': round(random() * 100)})
   
   async def send_channels(self, channels: Channel):
     await self.sio.emit('channels', channels_to_JSON(channels))

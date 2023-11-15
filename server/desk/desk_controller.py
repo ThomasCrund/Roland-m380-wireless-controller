@@ -2,7 +2,6 @@ from desk.desk import Desk
 from desk.desk_connection import DeskConnection
 from typing import List
 from message import DeskMessage
-import gevent
 
 class DeskController:
 
