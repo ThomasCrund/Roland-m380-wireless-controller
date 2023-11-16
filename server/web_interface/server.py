@@ -6,7 +6,7 @@ from random import random
 
 class Server:
   
-  def __init__(self, controller_callback, debug = False):
+  def __init__(self, controller_callback, desk, debug = False):
     # Thread.__init__(self)
     self.app = Flask(__name__)
     self.app.config['SECRET_KEY'] = 'donsky!'
@@ -14,12 +14,14 @@ class Server:
 
     self.socketio.on_event('message', handler=self.handle_message)
     self.socketio.on_event('connect', handler=self.connect)
+    self.socketio.on_event('channel-fader-set', handler=self.set_fader)
     # self.socketio.on_event('my_message', handler=self.my_message)
     self.threads = []
     self.controller_callback = controller_callback
 
     self.channels_JSON = {}
     self.desk_connected = False
+    self.client_requests = []
 
   def run(self):
     self.threads.append(self.socketio.start_background_task(self.background_task))
@@ -39,6 +41,10 @@ class Server:
   def handle_message(self, sid, msg):
     print(sid + ' received message: ' + msg)
     self.socketio.send(msg, to=sid)
+
+  def set_fader(self, group, channel, value):
+    print("Set Fader", group, channel, value)
+    self.client_requests.append({ 'type': 'channel-fader-set', 'group': group, 'channel': channel, 'value': value})
 
   def connect(self):
     print("new connection", request.args)

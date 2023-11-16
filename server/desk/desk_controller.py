@@ -17,6 +17,8 @@ class DeskController:
     self.last_connection = None
 
   def run(self, server: Server):
+    server.send_channels(channels_to_JSON(self.desk.channels))
+
     while True:
 
       # handle incoming messages from desk
@@ -30,7 +32,7 @@ class DeskController:
       # Update clients on desk settings and connection status
       self.update_server(server)
 
-      server.socketio.sleep(1)
+      server.socketio.sleep(0.01)
 
   def add_message(self, message: DeskMessage):
     self.incomingMessages.append(message)
