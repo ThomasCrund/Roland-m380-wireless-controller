@@ -2,7 +2,7 @@ from desk.desk import Desk
 from desk.desk_connection import DeskConnection
 from desk.channel import channels_to_JSON, Group, ChannelId
 from typing import List
-from message import DeskMessage, FaderMessage
+from message import DeskMessage, FaderMessage, MuteMessage
 from web_interface import Server
 
 class DeskController:
@@ -47,6 +47,8 @@ class DeskController:
       if request['type'] == 'channel-fader-set':
         message = FaderMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
         self.deskConnection.add_message_to_host(message)
+      elif request['type'] == 'channel-mute-set':
+        message = MuteMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
 
   def update_server(self, server: Server):
 
