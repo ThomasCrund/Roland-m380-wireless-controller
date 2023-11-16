@@ -12,7 +12,7 @@ class Desk:
 
     # Find channel if existing
     for channel in self.channels:
-      if channel.id == channelId:
+      if channel._id == channelId:
         return channel
 
     # Create Channel if not yet known

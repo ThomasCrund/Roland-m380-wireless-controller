@@ -20,8 +20,8 @@ class DeskController:
     while True:
 
       # handle incoming messages from desk
-      while len(self.deskConnection.message_from_host) != 0:
-        message: DeskMessage = self.deskConnection.message_from_host.pop(0)
+      while len(self.deskConnection.messages_from_host) != 0:
+        message: DeskMessage = self.deskConnection.messages_from_host.pop(0)
         message.update_desk(self.desk)
 
       # update desk connection and desk outgoing messages
@@ -39,13 +39,13 @@ class DeskController:
 
     # Check desk
     if self.desk.channelChange:
-      print("Update Channels")
       server.send_channels(channels_to_JSON(self.desk.channels))
       self.desk.channelChange = False
     
     # Check connection
     if (self.deskConnection.connected != self.last_connection) or self.last_connection == None:
       server.send_desk_connected(self.deskConnection.connected)
+      self.last_connection = self.deskConnection.connected
       
 
     

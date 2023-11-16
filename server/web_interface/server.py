@@ -10,7 +10,7 @@ class Server:
     # Thread.__init__(self)
     self.app = Flask(__name__)
     self.app.config['SECRET_KEY'] = 'donsky!'
-    self.socketio = SocketIO(self.app, cors_allowed_origins='*', logger=True, engineio_logger=True)
+    self.socketio = SocketIO(self.app, cors_allowed_origins='*', logger=debug, engineio_logger=debug)
 
     self.socketio.on_event('message', handler=self.handle_message)
     self.socketio.on_event('connect', handler=self.connect)

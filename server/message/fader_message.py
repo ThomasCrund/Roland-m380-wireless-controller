@@ -18,7 +18,7 @@ class FaderMessage(DeskMessage):
     return bytes
   
   def from_bytes(bytes: List[int]) -> FaderMessage:
-    channelId: ChannelId = ChannelId.from_control_message_bytes(bytes[0:1])
+    channelId: ChannelId = ChannelId.from_control_message_bytes(bytes[0:2])
     value = bytes[2]
     return FaderMessage(channelId, value, MessageDirection.GET_FROM_HOST)
   

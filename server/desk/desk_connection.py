@@ -98,12 +98,15 @@ class DeskConnection():
     return self._message_to_host
 
   def message_callback(self, msg: mido.Message):
-    bytes = msg.bytes()
-    messageInterpreted = None
-    if (bytes[0] | 0xF0) == 0xB0:
-      print('Message from Desk: fader_signal')
-      messageInterpreted = message.FaderMessage.from_bytes(msg.bytes())
-    else:
-      print('Message from Desk:', msg.bytes())
-      return
-    self.message_from_host.append(messageInterpreted)
+    try:
+      bytes = msg.bytes()
+      messageInterpreted = None
+      if (bytes[0] & 0xF0) == 0xB0:
+        print('Message from Desk: fader_signal')
+        messageInterpreted = message.FaderMessage.from_bytes(msg.bytes())
+      else:
+        print('Message from Desk:', msg.bytes())
+        return
+      self._message_from_host.append(messageInterpreted)
+    except Exception as e:
+      print('error', e)

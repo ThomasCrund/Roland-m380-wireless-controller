@@ -53,7 +53,6 @@ class ChannelId:
     deskChannel = None
     maxController = 0
     minController = 1
-
     # group
     if bytes[0] == 0xB0: 
       group = Group.FADER
@@ -98,7 +97,7 @@ class Channel:
     return self._fader
   
   @fader.setter
-  def setFader(self, value: int):
+  def fader(self, value: int):
     self._fader = value
 
   @property
@@ -106,7 +105,7 @@ class Channel:
     return self._mute
   
   @mute.setter
-  def setMute(self, value: bool):
+  def mute(self, value: bool):
     self._mute = value
 
   def __eq__(self, __value: object) -> bool:
