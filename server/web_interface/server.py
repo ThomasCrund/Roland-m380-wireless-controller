@@ -6,7 +6,7 @@ from random import random
 
 class Server:
   
-  def __init__(self, controller_callback, desk, debug = False):
+  def __init__(self, controller_callback, debug = False):
     # Thread.__init__(self)
     self.app = Flask(__name__)
     self.app.config['SECRET_KEY'] = 'donsky!'
@@ -42,9 +42,9 @@ class Server:
     print(sid + ' received message: ' + msg)
     self.socketio.send(msg, to=sid)
 
-  def set_fader(self, group, channel, value):
-    print("Set Fader", group, channel, value)
-    self.client_requests.append({ 'type': 'channel-fader-set', 'group': group, 'channel': channel, 'value': value})
+  def set_fader(self, group, channelNum, value):
+    print("Set Fader", group, channelNum, value)
+    self.client_requests.append({ 'type': 'channel-fader-set', 'group': group, 'channelNum': channelNum, 'value': value})
 
   def connect(self):
     print("new connection", request.args)

@@ -96,6 +96,9 @@ class DeskConnection():
   @property
   def messages_to_host(self):
     return self._message_to_host
+  
+  def add_message_to_host(self, message):
+    self._message_to_host.append(message)
 
   def message_callback(self, msg: mido.Message):
     try:

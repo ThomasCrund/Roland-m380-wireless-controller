@@ -8,7 +8,7 @@ export default function ChannelSimple(props) {
   // console.log(props)
   const changeFader = (e) => {
     setFader(e.target.value)
-    socket.emit('channel-fader-set', props.channel.group, props.channel.channelNum, e.target.value)
+    socket.emit('channel-fader-set', props.channel.group, props.channel.channelNum, Number(e.target.value))
   }
 
   useEffect(() => {

@@ -1,8 +1,8 @@
 from desk.desk import Desk
 from desk.desk_connection import DeskConnection
-from desk.channel import channels_to_JSON
+from desk.channel import channels_to_JSON, Group, ChannelId
 from typing import List
-from message import DeskMessage
+from message import DeskMessage, FaderMessage
 from web_interface import Server
 
 class DeskController:
@@ -26,6 +26,9 @@ class DeskController:
         message: DeskMessage = self.deskConnection.messages_from_host.pop(0)
         message.update_desk(self.desk)
 
+      # Get requests from the client and send to the desk
+      self.check_client_requests(server)
+
       # update desk connection and desk outgoing messages
       self.deskConnection.update()
 
@@ -36,6 +39,14 @@ class DeskController:
 
   def add_message(self, message: DeskMessage):
     self.incomingMessages.append(message)
+
+  def check_client_requests(self, server: Server):
+    while len(server.client_requests) != 0:
+      request = server.client_requests.pop(0)
+      print(request)
+      if request['type'] == 'channel-fader-set':
+        message = FaderMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
+        self.deskConnection.add_message_to_host(message)
 
   def update_server(self, server: Server):
 

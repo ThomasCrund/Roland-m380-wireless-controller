@@ -10,10 +10,26 @@ class Group(Enum):
   AUX = "AUX"
   MAIN = "MAIN"
 
+  @classmethod
+  def from_string(self, group_string):
+    if group_string == self.FADER.value:
+      return self.FADER
+    elif group_string == self.DCA.value:
+      return self.DCA
+    elif group_string == self.MTX.value:
+      return self.MTX
+    elif group_string == self.AUX.value:
+      return self.AUX
+    elif group_string == self.MAIN.value:
+      return self.MAIN
+    else:
+      raise ValueError(f"group_string: {group_string} is not a valid group")
+
 class ChannelId:
   def __init__(self, group: Group, deskChannel: int):
     self.group = group
     self.deskChannel = deskChannel
+    print(self.group, self.deskChannel)
 
   def get_MIDI_channel(self):
     if self.group == Group.FADER:
@@ -48,11 +64,14 @@ class ChannelId:
   def __eq__(self, __value: object) -> bool:
     return (self.deskChannel == __value.deskChannel) and (self.group == __value.group)
     
-  def from_control_message_bytes(bytes: List[int]) -> ChannelId:
+  def from_control_message_bytes(bytes: List[int], mute = False) -> ChannelId:
     group = 0xFF
     deskChannel = None
     maxController = 0
     minController = 1
+
+    if mute: bytes[1] -= 63
+
     # group
     if bytes[0] == 0xB0: 
       group = Group.FADER
