@@ -54,58 +54,56 @@ class DeskConnection():
     self._connected = connected
     return self.connected
 
-  def send_output_message(self):
+  def send_output_messages(self):
     for message in self._message_to_host:
       try:
         self.output_port.send(message.get_msg())
         self._message_to_host.remove(message)
       except rtmidi.SystemError as err:
         print("Error: ", err)
-        self._connected = False
-        self.input_port = None
-        self.output_port = None
+        self.close_ports()
         return
 
-
+  def close_ports(self):
+    self._connected = False
+    self.input_port.close()
+    self.output_port.close()
+    self.input_port = None
+    self.output_port = None
   
 
   def update(self):
     if not self.connect_to_desk():
       return
     
-    print(self.input_port, self.output_port)
-    channel = ChannelId(Group.FADER, 5)
-    print("Channel", channel)
-    message = FaderMessage(channel, 100)
-    self._message_to_host.append(message)
+    # print(self.input_port, self.output_port)
+    # channel = ChannelId(Group.FADER, 5)
+    # print("Channel", channel)
+    # message = FaderMessage(channel, 100)
+    # self._message_to_host.append(message)
     
 
-    self.send_output_message()
-
-  
+    self.send_output_messages()
     
   @property
   def connected(self):
     return self._connected
 
-  @connected.setter
-  def set_connected(self, connected: bool):
-    self._listener_connected = True
-    self._connected = self._listener_connected
+  @property
+  def messages_from_host(self):
+    return self._message_from_host
 
   @property
-  def message_from_host(self):
-    return self._connected
-
-  @property
-  def message_to_host(self):
-    return self._connected
+  def messages_to_host(self):
+    return self._message_to_host
 
   def message_callback(self, msg: mido.Message):
-    print(msg.bytes())
     bytes = msg.bytes()
     messageInterpreted = None
     if (bytes[0] | 0xF0) == 0xB0:
-      print('fader_signal')
+      print('Message from Desk: fader_signal')
       messageInterpreted = message.FaderMessage.from_bytes(msg.bytes())
-    
+    else:
+      print('Message from Desk:', msg.bytes())
+      return
+    self.message_from_host.append(messageInterpreted)

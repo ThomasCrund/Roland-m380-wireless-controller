@@ -1,45 +1,47 @@
 from threading import Thread
-from desk import Channel
-from web_interface.channel_interface import channels_to_JSON
-from flask import Flask, render_template, request
+# from web_interface.channel_interface import channels_to_JSON
+from flask import Flask, render_template, request, session
 from flask_socketio import SocketIO
 from random import random
 
 class Server:
   
-  def __init__(self, debug = False):
+  def __init__(self, controller_callback, debug = False):
     # Thread.__init__(self)
     self.app = Flask(__name__)
     self.app.config['SECRET_KEY'] = 'donsky!'
-    self.socketio = SocketIO(self.app, cors_allowed_origins='*')
+    self.socketio = SocketIO(self.app, cors_allowed_origins='*', logger=True, engineio_logger=True)
 
-    # self.app.debug = debug
-    # self.setDaemon(True)
-    # self.socketio.on('message', handler=self.handle_message)
-    # self.socketio.on('my_message', handler=self.my_message)
-    # self.sio.on('connect', handler=self.handle_message)
+    self.socketio.on_event('message', handler=self.handle_message)
+    self.socketio.on_event('connect', handler=self.connect)
+    # self.socketio.on_event('my_message', handler=self.my_message)
     self.threads = []
+    self.controller_callback = controller_callback
+
+    self.channels_JSON = {}
+    self.desk_connected = False
 
   def run(self):
     self.threads.append(self.socketio.start_background_task(self.background_task))
     self.socketio.run(self.app)
 
-  def stop(self):
-    pass
-
   def background_task(self):
-    while True:
-      self.socketio.sleep(1)
-      print("background")
-      self.socketio.emit('channels', { 'test': round(random() * 100)})
+    self.controller_callback(self)
   
-  async def send_channels(self, channels: Channel):
-    await self.sio.emit('channels', channels_to_JSON(channels))
+  def send_channels(self, channels_JSON):
+    self.channels_JSON = channels_JSON
+    self.socketio.emit('channels', channels_JSON)
+
+  def send_desk_connected(self, connected: bool):
+    self.desk_connected = connected
+    self.socketio.emit('desk_connected', connected)
 
   def handle_message(self, sid, msg):
     print(sid + ' received message: ' + msg)
-    self.sio.send(msg, to=sid)
+    self.socketio.send(msg, to=sid)
 
-  async def my_message(self, sid, data):
-    await self.sio.emit('my_message', data)
-    print('message ', data, sid)
+  def connect(self):
+    print("new connection", request.args)
+    self.socketio.emit('channels', self.channels_JSON)
+    self.socketio.emit('desk_connected', self.desk_connected)
+    

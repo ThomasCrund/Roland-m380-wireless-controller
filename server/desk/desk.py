@@ -5,6 +5,8 @@ from typing import List
 class Desk:
   def __init__(self) -> None:
     self.channels: List[Channel] = []
+    self.channelChange = False
+    self.patchbayChange = False
 
   def get_channel(self, channelId: ChannelId):
 

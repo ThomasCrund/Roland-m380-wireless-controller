@@ -25,3 +25,4 @@ class FaderMessage(DeskMessage):
   def update_desk(self, desk: Desk):
     channel = desk.get_channel(self.channelId)
     channel.fader = self.data
+    desk.channelChange = True

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 from typing import List
+import time
 
 class Group(Enum):
   FADER = "FADER"
@@ -110,3 +111,25 @@ class Channel:
 
   def __eq__(self, __value: object) -> bool:
     return self.id == __value.id
+  
+  def to_json(self):
+    channel_json = {
+      'group': self._id.group.value,
+      'channelNum': self._id.deskChannel,
+      'fader': self.fader,
+      'mute': self.mute,
+    }
+
+    return channel_json
+  
+
+def channels_to_JSON(channels: List[Channel]):
+  json = {
+    'channels': [],
+    'timeUpdated': time.time()
+  }
+
+  for channel in channels:
+    json['channels'].append(channel.to_json())
+
+  return json
