@@ -15,6 +15,7 @@ class Server:
     self.socketio.on_event('message', handler=self.handle_message)
     self.socketio.on_event('connect', handler=self.connect)
     self.socketio.on_event('channel-fader-set', handler=self.set_fader)
+    self.socketio.on_event('channel-mute-set', handler=self.set_mute)
     # self.socketio.on_event('my_message', handler=self.my_message)
     self.threads = []
     self.controller_callback = controller_callback
@@ -25,7 +26,7 @@ class Server:
 
   def run(self):
     self.threads.append(self.socketio.start_background_task(self.background_task))
-    self.socketio.run(self.app)
+    self.socketio.run(self.app, host="0.0.0.0")
 
   def background_task(self):
     self.controller_callback(self)
@@ -45,6 +46,10 @@ class Server:
   def set_fader(self, group, channelNum, value):
     print("Set Fader", group, channelNum, value)
     self.client_requests.append({ 'type': 'channel-fader-set', 'group': group, 'channelNum': channelNum, 'value': value})
+
+  def set_mute(self, group, channelNum, value):
+    print("Set mute", group, channelNum, value)
+    self.client_requests.append({ 'type': 'channel-mute-set', 'group': group, 'channelNum': channelNum, 'value': value})
 
   def connect(self):
     print("new connection", request.args)

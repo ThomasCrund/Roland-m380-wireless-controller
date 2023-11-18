@@ -57,6 +57,8 @@ class DeskConnection():
   def send_output_messages(self):
     for message in self._message_to_host:
       try:
+        print("### Sending message", message.hex())
+        print(message.hex())
         self.output_port.send(message.get_msg())
         self._message_to_host.remove(message)
       except rtmidi.SystemError as err:

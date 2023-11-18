@@ -13,11 +13,12 @@ class MuteMessage(DeskMessage):
   def bytes(self):
     bytes = []
     bytes.append(0xB0 + self.channelId.get_MIDI_channel())
-    bytes.append(self.channelId.get_MIDI_controller())
+    bytes.append(self.channelId.get_MIDI_controller() + 63)
     bytes.append(self.data)
     return bytes
   
   def from_bytes(bytes: List[int]) -> MuteMessage:
+    print("Reading", bytes)
     channelId: ChannelId = ChannelId.from_control_message_bytes(bytes[0:2], True)
     value = bytes[2]
     return MuteMessage(channelId, value, MessageDirection.GET_FROM_HOST)
@@ -25,4 +26,5 @@ class MuteMessage(DeskMessage):
   def update_desk(self, desk: Desk):
     channel = desk.get_channel(self.channelId)
     channel.mute = (self.data == 0x01)
+    print(self.data, channel.mute)
     desk.channelChange = True

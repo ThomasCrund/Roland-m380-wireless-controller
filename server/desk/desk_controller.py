@@ -46,9 +46,11 @@ class DeskController:
       print(request)
       if request['type'] == 'channel-fader-set':
         message = FaderMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
+        print(message.hex())
         self.deskConnection.add_message_to_host(message)
       elif request['type'] == 'channel-mute-set':
         message = MuteMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
+        print(message.hex())
 
   def update_server(self, server: Server):
 

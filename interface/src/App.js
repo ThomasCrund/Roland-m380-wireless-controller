@@ -39,6 +39,7 @@ function App() {
   }, []);
 
   console.log("Channels To print", channels)
+  console.log(window.location.host)
 
   const handleClickSendMessage = useCallback(() => socket.send('Hello'), []);
 
@@ -51,8 +52,7 @@ function App() {
         Click Me to send 'Hello'
       </button>
       Connected: {isConnected ? "Connected" : "Not Connected"}
-      <div>
-        test
+      <div style={{ display: 'flex' }}>
         {
           channels ?
           channels.map((channel, index) => 
