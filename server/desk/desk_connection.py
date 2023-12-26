@@ -4,7 +4,7 @@ import time
 from typing import List
 import rtmidi._rtmidi as rtmidi
 
-from message import DeskMessage, FaderMessage, MuteMessage
+from message import DeskMessage, MessageController
 from desk.channel import Group, ChannelId
 import message
 
@@ -15,6 +15,8 @@ class DeskConnection():
 
     self.input_port = None
     self.output_port = None
+
+    self.mc = MessageController()
 
     self._message_from_host: List[DeskMessage] = []
     self._message_to_host: List[DeskMessage] = []
@@ -105,16 +107,7 @@ class DeskConnection():
   def message_callback(self, msg: mido.Message):
     try:
       bytes = msg.bytes()
-      messageInterpreted = None
-      if (bytes[0] & 0xF0) == 0xB0 and bytes[1] < 0x40:
-        print('Message from Desk: fader_signal')
-        messageInterpreted = message.FaderMessage.from_bytes(msg.bytes())
-      elif (bytes[0] & 0xF0) == 0xB0 and bytes[1] >= 0x40:
-        print('Message from Desk: mute_signal')
-        messageInterpreted = message.MuteMessage.from_bytes(msg.bytes())
-      else:
-        print('Message from Desk:', msg.bytes())
-        return
+      messageInterpreted = self.mc.interpret_message_from_bytes(bytes)
       self._message_from_host.append(messageInterpreted)
     except Exception as e:
       print('error', e)

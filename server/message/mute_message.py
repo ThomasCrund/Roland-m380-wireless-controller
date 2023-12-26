@@ -1,7 +1,7 @@
 from __future__ import annotations
 from message import DeskMessage, MessageDirection, MessageType
 from desk.channel import ChannelId, Group, Channel
-from desk import Desk
+from desk.desk import Desk
 from typing import List
 
 class MuteMessage(DeskMessage):
@@ -28,3 +28,9 @@ class MuteMessage(DeskMessage):
     channel.mute = (self.data == 0x01)
     print(self.data, channel.mute)
     desk.channelChange = True
+
+  def check_bytes(bytes: List[int]) -> bool:
+    return (bytes[0] & 0xF0) == 0xB0 and bytes[1] >= 0x40
+
+  def check_server_type(type: str) -> bool:
+    return type == "mute"

@@ -1,9 +1,10 @@
+from __future__ import annotations
 import mido
 from enum import Enum
 from abc import ABC, abstractmethod
 from typing import List
 
-from desk import Desk
+from desk.desk import Desk
 
 class MessageDirection(Enum):
   REQUEST_HOST = 1
@@ -28,22 +29,37 @@ class DeskMessage(ABC):
   def get_msg(self):
     return mido.Message.from_bytes(self.bytes())
   
-  @abstractmethod
-  def bytes(self):
-    pass
-
+  def __eq__(self, __value: object) -> bool:
+    return self.bytes() == __value.bytes()
+  
   def hex(self):
     output = ""
     for byte in self.bytes():
       output += hex(byte) + " "
     return output
+  
+  @abstractmethod
+  def bytes(self):
+    pass
 
   @abstractmethod
-  def from_bytes(bytes: List[int]):
+  def from_bytes(bytes: List[int]) -> DeskMessage:
     pass
 
   @abstractmethod
   def update_desk(self, desk: Desk):
+    pass
+  
+  @abstractmethod
+  def request_update_messages(desk: Desk) -> List[DeskMessage]:
+    pass
+
+  @abstractmethod
+  def check_bytes(bytes: List[int]) -> bool:
+    pass
+
+  @abstractmethod
+  def check_server_type(type: str) -> bool:
     pass
 
 

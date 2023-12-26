@@ -110,6 +110,11 @@ class Channel:
     self._id = id
     self._fader: int = None
     self._mute: bool = None
+    self._properties = {}
+
+  def set_property(self, property: str, value: int):
+    epoch_time = time.time()
+    self._properties[property] = { 'value': value, 'timeSet': epoch_time }
 
   @property
   def fader(self) -> int:
@@ -134,8 +139,7 @@ class Channel:
     channel_json = {
       'group': self._id.group.value,
       'channelNum': self._id.deskChannel,
-      'fader': self.fader,
-      'mute': self.mute,
+      'properties': self._properties
     }
 
     return channel_json

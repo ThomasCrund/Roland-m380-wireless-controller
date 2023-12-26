@@ -1,6 +1,8 @@
 import mido
 from typing import List
 import time
+from message.sysexc_message import SysExcMessage
+from message.message import MessageDirection, MessageType
 
 print(mido.get_output_names())
 
@@ -52,32 +54,34 @@ def construct_control_message(address: List[int], data: List[int]):
     bytes += [end_byte]
     return mido.Message.from_bytes(bytes)
 
-port = mido.open_output('RSS M-400 1')
+# port = mido.open_output('RSS M-400 1')
 
-msg = mido.Message.from_bytes([240, 65, 16, 0, 0, 36, 18, 2, 0, 0, 0, 0, 126, 247])
-print(msg.hex())
 
 # with mido.open_input() as input:
 #   for msg in input:
 #     print(msg.bytes())
-msg2 = construct_channel_control_message([0, 5], [0])
-msg3 = construct_channel_control_message([0, 5], [50])
-msg4 = construct_channel_control_message([0, 5], [127])
-msg5 = construct_data_request_message([2, 0, 0, 0], [0x00, 0x00, 0x00, 0x01])
-print(msg2.bytes())
-while (True):
-    print('sending')
-    # port.send(msg5)
-    time.sleep(1)
-    port.send(msg2)
-    time.sleep(1)
-    port.send(msg3)
-    time.sleep(1)
-    port.send(msg4)
+# msg2 = construct_channel_control_message([0, 5], 0)
+# msg3 = construct_channel_control_message([0, 5], 50)
+# msg4 = construct_channel_control_message([0, 5], 127)
+msg = construct_control_message([2, 0, 0, 2], [0x00, 0x00, 0x00, 0x01])
+msg2 = SysExcMessage([2, 0, 0, 2], [0x00, 0x00, 0x00, 0x02], [0x00, 0x00, 0x00, 0x01], MessageType.CHANNEL, MessageDirection.SET_TO_HOST)
+
+print(msg.hex())
+print(msg2.get_msg().hex())
+print(msg2.update_message().get_msg().hex())
+
+# while (True):
+#     print('sending')
+#     # port.send(msg5)
 #     time.sleep(1)
-#     port.send(msg5)
+#     port.send(msg2)
 #     time.sleep(1)
+#     port.send(msg3)
+#     time.sleep(1)
+#     port.send(msg4)
+# #     time.sleep(1)
+# #     port.send(msg5)
+# #     time.sleep(1)
 
 
-print(msg2.hex())
 

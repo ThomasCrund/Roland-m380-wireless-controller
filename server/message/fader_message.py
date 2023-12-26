@@ -1,7 +1,7 @@
 from __future__ import annotations
 from message import DeskMessage, MessageDirection, MessageType
 from desk.channel import ChannelId, Group, Channel
-from desk import Desk
+from desk.desk import Desk
 from typing import List
 
 class FaderMessage(DeskMessage):
@@ -26,3 +26,21 @@ class FaderMessage(DeskMessage):
     channel = desk.get_channel(self.channelId)
     channel.fader = self.data
     desk.channelChange = True
+
+  def update_message(channelId: ChannelId) -> DeskMessage | None:
+    return None
+
+  def request_update_messages(desk: Desk) -> List[DeskMessage]:
+    messages: List[DeskMessage] = []
+    for channel in desk.channels:
+      message = FaderMessage.update_message()
+      if (message != None):
+        messages.append(message)
+    return messages
+
+  def check_bytes(bytes: List[int]) -> bool:
+    return (bytes[0] & 0xF0) == 0xB0 and bytes[1] < 0x40
+  
+  def check_server_type(type: str) -> bool:
+    return type == "fader"
+    

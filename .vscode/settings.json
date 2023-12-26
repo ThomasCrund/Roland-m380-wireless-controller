@@ -6,6 +6,7 @@
         "gevent",
         "mido",
         "PATCHBAY",
+        "sysexc",
         "TALKBACK"
     ]
 }
