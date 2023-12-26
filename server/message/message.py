@@ -10,6 +10,7 @@ class MessageDirection(Enum):
   REQUEST_HOST = 1
   SET_TO_HOST = 2
   GET_FROM_HOST = 3
+  INTERPRETER = 4
 
 class MessageType(Enum):
   CHANNEL = "CHANNEL"
