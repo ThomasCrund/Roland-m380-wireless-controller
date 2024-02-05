@@ -61,7 +61,6 @@ class SysExcMessage(DeskMessage):
     if bytes[2] != deviceId:
       return False
     if bytes[3] != modelId[0] or bytes[4] != modelId[1] or bytes[5] != modelId[2]:
-      print(bytes[3:5], modelId)
       return False
     if bytes[6] != 0x12:
       return False

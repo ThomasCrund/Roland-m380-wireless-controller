@@ -57,10 +57,12 @@ class DeskConnection():
     return self.connected
 
   def send_output_messages(self):
+    i = 0
     for message in self._message_to_host:
       try:
-        print("### Sending message", message.hex())
-        print(message.hex())
+        i += 1
+        if i > 200:
+          break
         self.output_port.send(message.get_msg())
         self._message_to_host.remove(message)
       except rtmidi.SystemError as err:
@@ -86,7 +88,6 @@ class DeskConnection():
     # message = FaderMessage(channel, 100)
     # self._message_to_host.append(message)
     
-
     self.send_output_messages()
     
   @property
@@ -108,9 +109,6 @@ class DeskConnection():
     try:
       bytes = msg.bytes()
       messageInterpreted = self.mc.interpret_message_from_bytes(bytes)
-      print("pre check", messageInterpreted)
-      # if messageInterpreted != 0:
-      print("test")
       self._message_from_host.append(messageInterpreted)
     except Exception as e:
       if (isinstance(e, NotImplementedError)):

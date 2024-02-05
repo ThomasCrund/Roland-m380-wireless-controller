@@ -32,7 +32,6 @@ class ChannelMessage(SysExcMessage):
   def from_bytes(self, bytes: List[int]) -> ChannelMessage:
     address = bytes[7:11]
     data = bytes[11:-2]
-    print(self.channelProperty.check_server_type, address, data)
     return ChannelMessage(self.channelProperty, data, ChannelId(Group.FADER, address[1] + 1), MessageDirection.GET_FROM_HOST, address[3] - self.channelProperty.address[1])
 
   def update_desk(self, desk: Desk):
@@ -52,6 +51,7 @@ class ChannelMessage(SysExcMessage):
     messages: List[ChannelMessage] = []
     for channel in desk.channels:
       if (channel._id.group == Group.FADER):
+      # if (channel._id.group == Group.FADER) and channel._id.deskChannel == 5:
         messages.append(ChannelMessage(self.channelProperty, self.data, channel._id, MessageDirection.REQUEST_HOST))
     return messages
 
@@ -59,19 +59,13 @@ class ChannelMessage(SysExcMessage):
     if not super().check_bytes(bytes):
       return False
     address = bytes[7:11]
-    if (self.channelProperty.check_server_type == "name_color"):
-      print(address)
     if not (address[0] == 0x03):
       return False
     if not (address[1] <= 0x2F):
       return False
     if not (address[2] == self.channelProperty.address[0]):
       return False
-    if (address[0] == 3 and address[1] == 4 and address[2] == 0 and address[3] == 1) and (self.channelProperty.check_server_type == "name"):
-      print(self.channelProperty.address[1], address[3], self.channelProperty.address[1] < address[3])
-      print(self.channelProperty.address[1] + self.channelProperty.size, address[3], (self.channelProperty.address[1] + self.channelProperty.size) >= (address[3]), self.channelProperty.address[1], self.channelProperty.size)
     if (address[3] < self.channelProperty.address[1] or (address[3]) >= (self.channelProperty.address[1] + self.channelProperty.size)):
-    # if (self.channelProperty.address[1] != address[3]):
       return False
     return True
   

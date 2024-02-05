@@ -29,7 +29,6 @@ class ChannelId:
   def __init__(self, group: Group, deskChannel: int):
     self.group = group
     self.deskChannel = deskChannel
-    print(self.group, self.deskChannel)
 
   def get_MIDI_channel(self):
     if self.group == Group.FADER:

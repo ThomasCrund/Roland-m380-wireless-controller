@@ -23,6 +23,9 @@ class DeskController:
   def run(self, server: Server):
     server.send_channels(channels_to_JSON(self.desk.channels))
 
+    messages = self.messageController.request_update_messages(self.desk)
+    self.deskConnection._message_to_host += messages
+
     while True:
 
       # handle incoming messages from desk
