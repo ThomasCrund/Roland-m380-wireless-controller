@@ -3,6 +3,8 @@ from desk.desk_connection import DeskConnection
 from desk.channel import channels_to_JSON, Group, ChannelId
 from typing import List
 from message import DeskMessage, FaderMessage, MuteMessage
+from message.message_controller import MessageController
+from message.channel_message import ChannelMessage
 from web_interface import Server
 
 class DeskController:
@@ -11,8 +13,10 @@ class DeskController:
     self.desk = desk
     self.incomingMessages: List[DeskMessage] = []
     self._listener_connected = False
-    self.desk.initialise_channels()
     self.deskConnection = deskConnection
+    self.messageController = MessageController()
+    self.messageController.add_interpreters(ChannelMessage.get_all_interpreters())
+    self.desk.initialise_channels()
 
     self.last_connection = None
 
@@ -25,6 +29,8 @@ class DeskController:
       while len(self.deskConnection.messages_from_host) != 0:
         message: DeskMessage = self.deskConnection.messages_from_host.pop(0)
         message.update_desk(self.desk)
+
+      print(self.desk.channels[4]._properties)
 
       # Get requests from the client and send to the desk
       self.check_client_requests(server)

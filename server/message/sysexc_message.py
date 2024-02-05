@@ -39,7 +39,7 @@ class SysExcMessage(DeskMessage):
       bytes.append(0xF7)
     return bytes
   
-  def from_bytes(bytes: List[int]) -> SysExcMessage:
+  def from_bytes(self, bytes: List[int]) -> SysExcMessage:
     print("### from bytes Not Implemented (SysExc message)")
 
   def update_desk(self, desk: Desk):
@@ -48,30 +48,33 @@ class SysExcMessage(DeskMessage):
   def update_message(self) -> SysExcMessage | None:
     return SysExcMessage(self.address, [0, 0, 0, 0], self.size, self.messageType, MessageDirection.REQUEST_HOST)
 
-  def request_update_messages(desk: Desk) -> List[DeskMessage]:
+  def request_update_messages(self, desk: Desk) -> List[DeskMessage]:
     print("### request_update_messages Not Implemented (SysExc message)")
     return []
 
-  def check_bytes(bytes: List[int]) -> bool:
+  def check_bytes(self, bytes: List[int]) -> bool:
+    if len(bytes) < 5: return False
     if bytes[0] != 0xF0:
       return False
     if bytes[1] != 0x41:
       return False
     if bytes[2] != deviceId:
       return False
-    if bytes[3:5] != modelId:
+    if bytes[3] != modelId[0] or bytes[4] != modelId[1] or bytes[5] != modelId[2]:
+      print(bytes[3:5], modelId)
       return False
     if bytes[6] != 0x12:
       return False
     # bytes[7:10] == address
     # bytes[11:14] == data
-    if bytes[-2] != calculate_checksum(bytes[7:-3]):
+    if bytes[-2] != calculate_checksum(bytes[7:-2]):
+      print(bytes[-2], calculate_checksum(bytes[7:-2]))
       return False
     if bytes[-1] != 0xF7:
       return False
     return True
   
-  def check_server_type(type: str) -> bool:
+  def check_server_type(self, type: str) -> bool:
     return type == "fader"
     
 def calculate_checksum(data: List[int]):

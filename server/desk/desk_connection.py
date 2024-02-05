@@ -108,6 +108,12 @@ class DeskConnection():
     try:
       bytes = msg.bytes()
       messageInterpreted = self.mc.interpret_message_from_bytes(bytes)
+      print("pre check", messageInterpreted)
+      # if messageInterpreted != 0:
+      print("test")
       self._message_from_host.append(messageInterpreted)
     except Exception as e:
-      print('error', e)
+      if (isinstance(e, NotImplementedError)):
+        pass
+      else:
+        print('error', e)

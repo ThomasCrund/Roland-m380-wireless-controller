@@ -5,6 +5,7 @@ from message.sysexc_message import SysExcMessage
 from message.message import MessageDirection, MessageType
 
 print(mido.get_output_names())
+print(mido.get_input_names())
 
 start_byte = 0xF0
 manufacture_id = 0x41 # Roland

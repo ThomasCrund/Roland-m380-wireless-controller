@@ -52,15 +52,15 @@ class DeskMessage(ABC):
     pass
   
   @abstractmethod
-  def request_update_messages(desk: Desk) -> List[DeskMessage]:
+  def request_update_messages(self, desk: Desk) -> List[DeskMessage]:
     pass
 
   @abstractmethod
-  def check_bytes(bytes: List[int]) -> bool:
+  def check_bytes(self, bytes: List[int]) -> bool:
     pass
 
   @abstractmethod
-  def check_server_type(type: str) -> bool:
+  def check_server_type(self, type: str) -> bool:
     pass
 
 
