@@ -33,17 +33,20 @@ class ChannelMessage(SysExcMessage):
     address = bytes[7:11]
     data = bytes[11:-2]
     print(self.channelProperty.check_server_type, address, data)
-    return ChannelMessage(self.channelProperty, data, ChannelId(Group.FADER, address[1] + 1))
+    return ChannelMessage(self.channelProperty, data, ChannelId(Group.FADER, address[1] + 1), MessageDirection.GET_FROM_HOST, address[3] - self.channelProperty.address[1])
 
   def update_desk(self, desk: Desk):
     for channel in desk.channels:
       if (channel._id == self.channelId):
         if self.channelProperty.size == 1:
-          channel._properties[self.channelProperty.check_server_type] = self.data
+          channel._properties[self.channelProperty.check_server_type] = self.data[0]
         else:
-          if not self.channelProperty.check_server_type in channel._properties:
-            channel._properties[self.channelProperty.check_server_type] = [0] * self.channelProperty.size
-          channel._properties[self.channelProperty.check_server_type][self.addressOffset] = self.data
+          if len(self.data) == self.channelProperty.size:
+            channel._properties[self.channelProperty.check_server_type] = self.data
+          else:
+            if not self.channelProperty.check_server_type in channel._properties:
+              channel._properties[self.channelProperty.check_server_type] = [0] * self.channelProperty.size
+            channel._properties[self.channelProperty.check_server_type][self.addressOffset] = self.data[0]
 
   def request_update_messages(self, desk: Desk) -> List[DeskMessage]:
     messages: List[ChannelMessage] = []
@@ -56,14 +59,19 @@ class ChannelMessage(SysExcMessage):
     if not super().check_bytes(bytes):
       return False
     address = bytes[7:11]
-    # if (self.channelProperty.check_server_type == "fader"):
+    if (self.channelProperty.check_server_type == "name_color"):
+      print(address)
     if not (address[0] == 0x03):
       return False
     if not (address[1] <= 0x2F):
       return False
     if not (address[2] == self.channelProperty.address[0]):
       return False
-    if (self.channelProperty.address[1] < address[3] or (self.channelProperty.size) >= (self.channelProperty.address[1] + address[3])):
+    if (address[0] == 3 and address[1] == 4 and address[2] == 0 and address[3] == 1) and (self.channelProperty.check_server_type == "name"):
+      print(self.channelProperty.address[1], address[3], self.channelProperty.address[1] < address[3])
+      print(self.channelProperty.address[1] + self.channelProperty.size, address[3], (self.channelProperty.address[1] + self.channelProperty.size) >= (address[3]), self.channelProperty.address[1], self.channelProperty.size)
+    if (address[3] < self.channelProperty.address[1] or (address[3]) >= (self.channelProperty.address[1] + self.channelProperty.size)):
+    # if (self.channelProperty.address[1] != address[3]):
       return False
     return True
   
