@@ -14,8 +14,7 @@ class Server:
 
     self.socketio.on_event('message', handler=self.handle_message)
     self.socketio.on_event('connect', handler=self.connect)
-    self.socketio.on_event('channel-fader-set', handler=self.set_fader)
-    self.socketio.on_event('channel-mute-set', handler=self.set_mute)
+    self.socketio.on_event('channel-set', handler=self.set_channel_property)
     # self.socketio.on_event('my_message', handler=self.my_message)
     self.threads = []
     self.controller_callback = controller_callback
@@ -43,13 +42,9 @@ class Server:
     print(sid + ' received message: ' + msg)
     self.socketio.send(msg, to=sid)
 
-  def set_fader(self, group, channelNum, value):
-    print("Set Fader", group, channelNum, value)
-    self.client_requests.append({ 'type': 'channel-fader-set', 'group': group, 'channelNum': channelNum, 'value': value})
-
-  def set_mute(self, group, channelNum, value):
-    print("Set mute", group, channelNum, value)
-    self.client_requests.append({ 'type': 'channel-mute-set', 'group': group, 'channelNum': channelNum, 'value': value})
+  def set_channel_property(self, property, group, channelNum, value):
+    print("Set" + property, group, channelNum, value)
+    self.client_requests.append({ 'type': 'channel', 'property': property, 'group': group, 'channelNum': channelNum, 'value': value})
 
   def connect(self):
     print("new connection", request.args)

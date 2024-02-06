@@ -46,6 +46,12 @@ class ChannelMessage(SysExcMessage):
             if not self.channelProperty.check_server_type in channel._properties:
               channel._properties[self.channelProperty.check_server_type] = [0] * self.channelProperty.size
             channel._properties[self.channelProperty.check_server_type][self.addressOffset] = self.data[0]
+    desk.channelChange = True
+  
+  def handle_client_message(self, channelId: ChannelId, data: List[int]):
+    if not isinstance(data, List):
+      data = [data]
+    return ChannelMessage(self.channelProperty, data, channelId)
 
   def request_update_messages(self, desk: Desk) -> List[DeskMessage]:
     messages: List[ChannelMessage] = []

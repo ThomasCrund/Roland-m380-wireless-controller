@@ -33,8 +33,6 @@ class DeskController:
         message: DeskMessage = self.deskConnection.messages_from_host.pop(0)
         message.update_desk(self.desk)
 
-      print(self.desk.channels[4]._properties)
-
       # Get requests from the client and send to the desk
       self.check_client_requests(server)
 
@@ -53,18 +51,20 @@ class DeskController:
     while len(server.client_requests) != 0:
       request = server.client_requests.pop(0)
       print(request)
-      if request['type'] == 'channel-fader-set':
-        message = FaderMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
-        print(message.hex())
-        self.deskConnection.add_message_to_host(message)
-      elif request['type'] == 'channel-mute-set':
-        message = MuteMessage(ChannelId(Group(request['group']), request['channelNum']), request['value'])
-        print(message.hex())
+      for messageInterpreter in self.messageController.messageInterpreters:
+        print(messageInterpreter, isinstance(messageInterpreter,  ChannelMessage))
+        if isinstance(messageInterpreter,  ChannelMessage):
+          if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
+            message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
+            print(message)
+            self.deskConnection.add_message_to_host(message)
+            return
 
   def update_server(self, server: Server):
 
     # Check desk
     if self.desk.channelChange:
+      print("Update Clients")
       server.send_channels(channels_to_JSON(self.desk.channels))
       self.desk.channelChange = False
     

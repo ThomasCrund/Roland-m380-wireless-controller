@@ -9,6 +9,7 @@ function App() {
   const [channels, setChannels] = useState([]);
 
   useEffect(() => {
+    console.log("Register")
     function onConnect() {
       console.log('Connect');
       setIsConnected(true);
@@ -21,14 +22,12 @@ function App() {
 
     function onChannels(data) {
       console.log('channels', data)
-      setChannels(data.channels)
+      setChannels((channels) => data.channels)
     }
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('channels', onChannels);
-
-
 
     return () => {
       console.log("Deregister")
