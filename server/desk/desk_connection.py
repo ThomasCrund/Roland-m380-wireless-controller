@@ -112,6 +112,6 @@ class DeskConnection():
       self._message_from_host.append(messageInterpreted)
     except Exception as e:
       if (isinstance(e, NotImplementedError)):
-        pass
+        print('not Implemented', e)
       else:
         print('error', e)
