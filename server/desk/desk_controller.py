@@ -3,10 +3,11 @@ from desk.desk_connection import DeskConnection
 from desk.channel import channels_to_JSON, Group, ChannelId
 from desk.input import inputs_to_JSON, InputSource, InputId
 from typing import List
-from message import DeskMessage, FaderMessage, MuteMessage
+from message import DeskMessage
 from message.message_controller import MessageController
 from message.channel_message import ChannelMessage
 from message.input_board_message import InputBoardMessage
+from message.input_patchbay_message import InputPatchbayMessage
 from web_interface import Server
 
 class DeskController:
@@ -19,12 +20,13 @@ class DeskController:
     self.messageController = MessageController()
     self.messageController.add_interpreters(ChannelMessage.get_all_interpreters())
     self.messageController.add_interpreters(InputBoardMessage.get_all_interpreters())
+    self.messageController.add_interpreters(InputPatchbayMessage.get_all_interpreters())
     self.desk.initialise_channels()
 
     self.last_connection = None
 
   def run(self, server: Server):
-    server.send_channels(channels_to_JSON(self.desk.channels))
+    server.send_list('channels', channels_to_JSON(self.desk.channels))
 
     messages = self.messageController.request_update_messages(self.desk)
     self.deskConnection._message_to_host += messages
@@ -59,12 +61,21 @@ class DeskController:
         if isinstance(messageInterpreter,  ChannelMessage):
           if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
+            message.update_desk(self.desk, False)
             print(message)
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputBoardMessage):
           if request['type'] == "input" and request['property'] == messageInterpreter.inputBoardProperty.name:
             message = messageInterpreter.handle_client_message(InputId(InputSource(request['inputSource']), request['inputNumber']), request['value'])
+            message.update_desk(self.desk, False)
+            print(message)
+            self.deskConnection.add_message_to_host(message)
+            return
+        if isinstance(messageInterpreter,  InputPatchbayMessage):
+          if request['type'] == "channel" and request['property'] == "input":
+            message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), InputId(InputSource(request['value']['inputSource']), request['value']['inputNumber']))
+            message.update_desk(self.desk, False)
             print(message)
             self.deskConnection.add_message_to_host(message)
             return

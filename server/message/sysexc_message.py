@@ -42,7 +42,7 @@ class SysExcMessage(DeskMessage):
   def from_bytes(self, bytes: List[int]) -> SysExcMessage:
     print("### from bytes Not Implemented (SysExc message)")
 
-  def update_desk(self, desk: Desk):
+  def update_desk(self, desk: Desk, signalUpdate = True):
     print("### update desk Not Implemented (SysExc message)")
 
   def update_message(self) -> SysExcMessage | None:

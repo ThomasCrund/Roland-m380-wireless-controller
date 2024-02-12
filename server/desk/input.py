@@ -7,7 +7,13 @@ class InputSource(Enum):
   REACT_A = "REACT_A"
   REACT_B = "REACT_B"
   CONSOLE = "CONSOLE"
-
+  FX1 = "FX1"
+  FX2 = "FX2"
+  FX3 = "FX3"
+  FX4 = "FX4"
+  STEREO_IN = "STEREO_IN"
+  PLAY = "PLAY"
+  NONE = "NONE"
 
 class InputId:
   def __init__(self, inputSource: InputSource, inputNumber: int):

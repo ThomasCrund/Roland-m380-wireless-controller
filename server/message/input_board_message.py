@@ -31,7 +31,7 @@ class InputBoardMessage(SysExcMessage):
     super().__init__(address, data, size, messageType=MessageType.CHANNEL, direction=direction)
 
     self.inputBoardProperty = inputBoardProperty
-    self.id = id
+    self._id = id
     self.data = data
     self.addressOffset = addressOffset
 
@@ -46,8 +46,8 @@ class InputBoardMessage(SysExcMessage):
 
     return InputBoardMessage(self.inputBoardProperty, data, newId, MessageDirection.GET_FROM_HOST, address[3] - self.inputBoardProperty.address[1])
 
-  def update_desk(self, desk: Desk):
-    input = desk.get_input(self.id)
+  def update_desk(self, desk: Desk, signalUpdate = True):
+    input = desk.get_input(self._id)
     if self.inputBoardProperty.size == 1:
       input._properties[self.inputBoardProperty.check_server_type] = self.data[0]
     else:
@@ -57,7 +57,8 @@ class InputBoardMessage(SysExcMessage):
         if not self.inputBoardProperty.check_server_type in input._properties:
           input._properties[self.inputBoardProperty.check_server_type] = [0] * self.inputBoardProperty.size
         input._properties[self.inputBoardProperty.check_server_type][self.addressOffset] = self.data[0]
-    desk.inputsChange = True
+    if signalUpdate:
+      desk.inputsChange = True
   
   def handle_client_message(self, id: InputId, data: List[int]):
     if not isinstance(data, List):
@@ -89,7 +90,7 @@ class InputBoardMessage(SysExcMessage):
     return True
   
   def get_all_interpreters() -> InputBoardMessage:
-    id = InputId(InputSource.REACT_A, 0)
+    id = InputId(InputSource.REACT_A, 1)
     messages = [
       InputBoardMessage(InputBoardProperty([0x00, 0x01], 1, "gain", (0, 37)), [], id, MessageDirection.INTERPRETER),
       InputBoardMessage(InputBoardProperty([0x00, 0x02], 1, "pad", (0, 1)), [], id, MessageDirection.INTERPRETER),

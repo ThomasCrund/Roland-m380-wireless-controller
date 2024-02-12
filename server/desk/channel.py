@@ -2,6 +2,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import List
 import time
+from desk.input import InputId
 
 class Group(Enum):
   FADER = "FADER"
@@ -110,6 +111,7 @@ class Channel:
     self._fader: int = None
     self._mute: bool = None
     self._properties = {}
+    self.inputId: InputId | None = None
 
   def set_property(self, property: str, value: int):
     epoch_time = time.time()
@@ -138,8 +140,14 @@ class Channel:
     channel_json = {
       'group': self._id.group.value,
       'channelNum': self._id.deskChannel,
-      'properties': self._properties
+      'properties': self._properties,
     }
+
+    if self.inputId != None:
+      channel_json['inputId'] = {
+        'inputSource': self.inputId.source,
+        'inputNumber': self.inputId.number
+      }
 
     return channel_json
   

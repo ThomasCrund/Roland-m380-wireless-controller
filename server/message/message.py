@@ -48,7 +48,7 @@ class DeskMessage(ABC):
     pass
 
   @abstractmethod
-  def update_desk(self, desk: Desk):
+  def update_desk(self, desk: Desk, signalUpdate = True):
     pass
   
   @abstractmethod

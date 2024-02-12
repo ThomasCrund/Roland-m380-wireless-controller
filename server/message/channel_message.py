@@ -34,7 +34,7 @@ class ChannelMessage(SysExcMessage):
     data = bytes[11:-2]
     return ChannelMessage(self.channelProperty, data, ChannelId(Group.FADER, address[1] + 1), MessageDirection.GET_FROM_HOST, address[3] - self.channelProperty.address[1])
 
-  def update_desk(self, desk: Desk):
+  def update_desk(self, desk: Desk, signalUpdate = True):
     for channel in desk.channels:
       if (channel._id == self.channelId):
         if self.channelProperty.size == 1:
@@ -46,7 +46,8 @@ class ChannelMessage(SysExcMessage):
             if not self.channelProperty.check_server_type in channel._properties:
               channel._properties[self.channelProperty.check_server_type] = [0] * self.channelProperty.size
             channel._properties[self.channelProperty.check_server_type][self.addressOffset] = self.data[0]
-    desk.channelChange = True
+    if signalUpdate:
+      desk.channelChange = True
   
   def handle_client_message(self, channelId: ChannelId, data: List[int]):
     if not isinstance(data, List):
