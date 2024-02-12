@@ -1,12 +1,14 @@
 from enum import Enum
 from desk.channel import Channel, ChannelId, Group
+from desk.input import Input, InputId, InputSource
 from typing import List
 
 class Desk:
   def __init__(self) -> None:
     self.channels: List[Channel] = []
+    self.inputs: List[Input] = []
     self.channelChange = False
-    self.patchbayChange = False
+    self.inputsChange = False
 
   def get_channel(self, channelId: ChannelId):
 
@@ -20,9 +22,30 @@ class Desk:
     self.channels.append(newChannel)
     return newChannel
   
+  def get_input(self, inputId: InputId):
+
+    # Find channel if existing
+    for input in self.inputs:
+      if input._id == inputId:
+        return input
+
+    # Create Channel if not yet known
+    newInput = Input(inputId)
+    self.inputs.append(newInput)
+    return newInput
+  
   def initialise_group(self, group: Group, startId: int, endId: int):
     for i in range(startId, endId + 1):
       self.channels.append(Channel(ChannelId(group, i)))
 
   def initialise_channels(self):
     self.initialise_group(Group.FADER, 1, 48)
+
+  def initialise_input_source(self, inputSource: InputSource, startId: int, endId: int):
+    for i in range(startId, endId + 1):
+      self.inputs.append(Input(Input(inputSource, i)))
+
+  def initialise_inputs(self):
+    self.initialise_input_source(InputSource.CONSOLE, 1, 8)
+    self.initialise_input_source(InputSource.REACT_A, 1, 40)
+    self.initialise_input_source(InputSource.REACT_B, 1, 40)

@@ -1,10 +1,12 @@
 from desk.desk import Desk
 from desk.desk_connection import DeskConnection
 from desk.channel import channels_to_JSON, Group, ChannelId
+from desk.input import inputs_to_JSON, InputSource, InputId
 from typing import List
 from message import DeskMessage, FaderMessage, MuteMessage
 from message.message_controller import MessageController
 from message.channel_message import ChannelMessage
+from message.input_board_message import InputBoardMessage
 from web_interface import Server
 
 class DeskController:
@@ -16,6 +18,7 @@ class DeskController:
     self.deskConnection = deskConnection
     self.messageController = MessageController()
     self.messageController.add_interpreters(ChannelMessage.get_all_interpreters())
+    self.messageController.add_interpreters(InputBoardMessage.get_all_interpreters())
     self.desk.initialise_channels()
 
     self.last_connection = None
@@ -59,14 +62,25 @@ class DeskController:
             print(message)
             self.deskConnection.add_message_to_host(message)
             return
+        if isinstance(messageInterpreter,  InputBoardMessage):
+          if request['type'] == "input" and request['property'] == messageInterpreter.inputBoardProperty.name:
+            message = messageInterpreter.handle_client_message(InputId(InputSource(request['inputSource']), request['inputNumber']), request['value'])
+            print(message)
+            self.deskConnection.add_message_to_host(message)
+            return
 
   def update_server(self, server: Server):
 
     # Check desk
     if self.desk.channelChange:
-      print("Update Clients")
-      server.send_channels(channels_to_JSON(self.desk.channels))
+      print("Update Clients: Channels")
+      server.send_list("channels", channels_to_JSON(self.desk.channels))
       self.desk.channelChange = False
+
+    if self.desk.inputsChange:
+      print("Update Clients: Inputs")
+      server.send_list("inputs", inputs_to_JSON(self.desk.inputs))
+      self.desk.inputsChange = False
     
     # Check connection
     if (self.deskConnection.connected != self.last_connection) or self.last_connection == None:

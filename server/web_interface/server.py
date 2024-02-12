@@ -19,7 +19,7 @@ class Server:
     self.threads = []
     self.controller_callback = controller_callback
 
-    self.channels_JSON = {}
+    self.listsJSON = {}
     self.desk_connected = False
     self.client_requests = []
 
@@ -30,9 +30,9 @@ class Server:
   def background_task(self):
     self.controller_callback(self)
   
-  def send_channels(self, channels_JSON):
-    self.channels_JSON = channels_JSON
-    self.socketio.emit('channels', channels_JSON)
+  def send_list(self, list_name, channels_JSON):
+    self.listsJSON[list_name] = channels_JSON
+    self.socketio.emit(list_name, channels_JSON)
 
   def send_desk_connected(self, connected: bool):
     self.desk_connected = connected
@@ -48,6 +48,7 @@ class Server:
 
   def connect(self):
     print("new connection", request.args)
-    self.socketio.emit('channels', self.channels_JSON)
+    for listName in self.listsJSON:
+      self.socketio.emit(listName, self.listsJSON[listName])
     self.socketio.emit('desk_connected', self.desk_connected)
     
