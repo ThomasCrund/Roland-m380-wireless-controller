@@ -55,30 +55,27 @@ class DeskController:
   def check_client_requests(self, server: Server):
     while len(server.client_requests) != 0:
       request = server.client_requests.pop(0)
-      print(request)
       for messageInterpreter in self.messageController.messageInterpreters:
-        print(messageInterpreter, isinstance(messageInterpreter,  ChannelMessage))
         if isinstance(messageInterpreter,  ChannelMessage):
           if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
             message.update_desk(self.desk, False)
-            print(message)
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputBoardMessage):
           if request['type'] == "input" and request['property'] == messageInterpreter.inputBoardProperty.name:
             message = messageInterpreter.handle_client_message(InputId(InputSource(request['inputSource']), request['inputNumber']), request['value'])
             message.update_desk(self.desk, False)
-            print(message)
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputPatchbayMessage):
           if request['type'] == "channel" and request['property'] == "input":
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), InputId(InputSource(request['value']['inputSource']), request['value']['inputNumber']))
             message.update_desk(self.desk, False)
-            print(message)
             self.deskConnection.add_message_to_host(message)
             return
+      print("Request not know", request)
+      
 
   def update_server(self, server: Server):
 

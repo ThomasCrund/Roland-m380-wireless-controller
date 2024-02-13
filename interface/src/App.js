@@ -43,7 +43,12 @@ function App() {
   const handleClickSendMessage = useCallback(() => socket.send('Hello'), []);
 
   return (
-    <div>
+    <div style={{
+      overflowX: 'hidden',
+      overflowY: 'hidden',
+      height: '100vh',
+      width: '100vw'
+    }}>
       <button
         onClick={handleClickSendMessage}
         disabled={!isConnected}
@@ -51,7 +56,18 @@ function App() {
         Click Me to send 'Hello'
       </button>
       Connected: {isConnected ? "Connected" : "Not Connected"}
-      <div style={{ display: 'flex' }}>
+      <div style={{ 
+        display: 'flex',  
+        width: '100vw - 60px',
+        overflowX: 'scroll', 
+        backgroundColor: '#F0F0FD',
+        padding: 10,
+        marginLeft: 30,
+        marginTop: 15,
+        marginBottom: 30,
+        marginRight: 30,
+        borderRadius: 25
+      }}>
         {
           channels ?
           channels.map((channel, index) => 

@@ -115,7 +115,7 @@ class Channel:
 
   def set_property(self, property: str, value: int):
     epoch_time = time.time()
-    self._properties[property] = { 'value': value, 'timeSet': epoch_time }
+    self._properties[property] = value
 
   @property
   def fader(self) -> int:

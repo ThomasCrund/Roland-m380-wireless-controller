@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { socket } from './socket';
+import Fader from './Fader';
 
 function faderServerToDb(fader) {
   if (fader[0] === 0) {
@@ -26,6 +27,13 @@ function faderDbToServer(dB) {
   } else {
     let mod = 128 - Math.round( - (dB % 12.8) * 10);
     let times = 127 - Math.floor(dB / -12.8);
+    if (mod === 128) {
+      mod = 0;
+      times = times += 1;
+      if (times === 128) {
+        times = 0;
+      }
+    } 
     return [times, mod];
   }
 }
@@ -87,8 +95,8 @@ export default function ChannelSimple(props) {
   const [fader, setFader] = useState(props.channel.properties.fader ?? [65, 0])
   const [mute, setMute] = useState(props.channel.properties.mute ?? false)
   // console.log(props)
-  const changeFader = (e) => {
-    let inputValue = sliderTodB(e.target.value);
+  const changeFader = (value) => {
+    let inputValue = sliderTodB(value);
     let newFader = faderDbToServer((inputValue));
     console.log(inputValue, newFader)
     setFader(newFader)
@@ -107,13 +115,18 @@ export default function ChannelSimple(props) {
   useEffect(() => {
     if (props.channel.properties.fader != null) {
       setFader(props.channel.properties.fader)
+    } else {
+      setFader([64, 0])
     }
     if (props.channel.properties.mute != null) {
       setMute(props.channel.properties.mute)
+    } else {
+      setMute(1)
     }
   }, [props.channel])
 
-  let channelColour = getChannelColour(props.channel.properties.name_color);
+  let channelColour = getChannelColour(props.channel.properties.name_color) ?? 0;
+  let name = props.channel.properties.name ?? [];
 
   let muteButtonStyles = {
     width: 40, 
@@ -133,10 +146,11 @@ export default function ChannelSimple(props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: 80, alignItems: 'center' }}>
       <div style={{ width: '100%', textAlign: 'center', fontSize: 20, color: channelColour }}>{props.channel.channelNum}</div>
-      <span style={{ color: channelColour }}>{props.channel.properties.name.map(a => String.fromCharCode(a))}</span>
+      <span style={{ color: channelColour }}>{name.map(a => String.fromCharCode(a))}</span>
       <div style={muteButtonStyles} onClick={changeMute}>Mute</div>
-      
-      <input type="range" min="1.9" max="100" step="0.1" value={dBtoSlider(faderServerToDb(fader))} style={{ appearance: 'slider-vertical', height: 300, color: channelColour }} onChange={changeFader} />
+
+
+      <Fader height={500} value={dBtoSlider(faderServerToDb(fader))} onChange={changeFader} max={1.9} min={100} step={0.1} thumbColor={channelColour} />
       {displayDb(faderServerToDb(fader))} dB
     </div>
   )
