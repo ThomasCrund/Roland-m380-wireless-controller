@@ -150,7 +150,7 @@ export default function ChannelSimple(props) {
       <div style={muteButtonStyles} onClick={changeMute}>Mute</div>
 
 
-      <Fader height={500} value={dBtoSlider(faderServerToDb(fader))} onChange={changeFader} max={1.9} min={100} step={0.1} thumbColor={channelColour} />
+      <Fader height={400} value={dBtoSlider(faderServerToDb(fader))} onChange={changeFader} max={1.9} min={100} step={0.1} thumbColor={channelColour} />
       {displayDb(faderServerToDb(fader))} dB
     </div>
   )

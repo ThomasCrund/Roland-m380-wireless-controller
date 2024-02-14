@@ -37,6 +37,21 @@ function App() {
     };
   }, []);
 
+  // const testMouseMove = (e) => {
+  //   setObject({
+  //     identifier: e.touches[0].identifier, 
+  //     x: e.touches[0].pageX,
+  //     y: e.touches[0].pageY
+  //   });
+  // }
+
+  // useEffect(() => {
+  //   window.addEventListener('touchstart', testMouseMove)
+  //   return () => {
+  //     window.addEventListener('touchstart', testMouseMove);
+  //   }
+  // })
+
   console.log("Channels To print", channels)
   console.log(window.location.host)
 

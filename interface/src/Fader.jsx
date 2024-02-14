@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 export default function Fader({
   value = 0,
-  height = 300,
+  height = 20,
   width = 80,
   min = 0,
   max = 100,
@@ -19,6 +19,7 @@ export default function Fader({
   }
 
   const [ dragging, setDragging ] = useState(false);
+  const [ touchId, setTouchId ] = useState({ id: 0, yLast: 0});
   
   let position = valueToPosition(value);
 
@@ -28,6 +29,7 @@ export default function Fader({
 
   const mouseMove = (e) => {
     if (dragging) {
+      e.preventDefault();
       let newPos = position + e.movementY
       if (newPos < 0) newPos = 0;
       if (newPos > (height - thumbHeight)) newPos = (height - thumbHeight);
@@ -42,14 +44,37 @@ export default function Fader({
       setDragging(false)
     }
   }
+  
+  const touchStart = (e) => {
+    setTouchId({ id: e.touches[0].identifier, yLast: e.touches[0].pageY });
+  }
+
+  const touchEnd = (e) => {
+    setTouchId({ id: 0, yLast: 0 });
+  }
+
+  const touchMove = (e) => {
+    if (touchId.id !== 0) {
+      let newPos = position + (e.touches[0].pageY - touchId.yLast) / 5
+      if (newPos < 0) newPos = 0;
+      if (newPos > (height - thumbHeight)) newPos = (height - thumbHeight);
+      console.log(newPos, valueToPosition(positionToValue(newPos)), positionToValue(newPos))
+      onChange(positionToValue(newPos))
+      setTouchId(touch => ({ yLast: e.touches[0].pageY, ...touch}))
+    }
+  }
 
   useEffect(() => {
     window.addEventListener('mousemove', mouseMove);
-    window.addEventListener('mouseup', mouseUp)
-
+    window.addEventListener('mouseup', mouseUp);
+    window.addEventListener('touchend', touchEnd);
+    window.addEventListener('touchmove', touchMove)
     return () => {
       window.removeEventListener('mousemove', mouseMove);
-      window.removeEventListener('mouseup', mouseUp)
+      window.removeEventListener('mouseup', mouseUp);
+      window.removeEventListener('touchend', touchEnd);
+      window.removeEventListener('touchmove', touchMove);
+
     }
   })
 
@@ -65,6 +90,8 @@ export default function Fader({
          }}
          onMouseDown={e => setDragging(true)}
          onMouseUp={e => setDragging(false)}
+         onTouchStart={touchStart}
+         onTouchEnd={touchEnd}
     >
       <div className='fader-track'
            style={{
