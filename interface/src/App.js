@@ -25,15 +25,21 @@ function App() {
       setChannels((channels) => data.channels)
     }
 
+    function onInputs(data) {
+      console.log('inputs', data)
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('channels', onChannels);
+    socket.on('inputs', onInputs);
 
     return () => {
       console.log("Deregister")
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('faders', onChannels);
+      socket.off('inputs', onInputs);
     };
   }, []);
 

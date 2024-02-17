@@ -42,21 +42,21 @@ class InputBoardMessage(SysExcMessage):
     newId: InputId = None
     if address[1] < 0x28: newId = InputId(InputSource.REACT_A, address[1] - 0x00 + 1)
     elif address[1] < 0x50: newId = InputId(InputSource.REACT_B, address[1] - 0x28 + 1)
-    else: newId = InputId(InputSource.REACT_A, address[1] - 0x50 + 1)
+    else: newId = InputId(InputSource.CONSOLE, address[1] - 0x50 + 1)
 
     return InputBoardMessage(self.inputBoardProperty, data, newId, MessageDirection.GET_FROM_HOST, address[3] - self.inputBoardProperty.address[1])
 
   def update_desk(self, desk: Desk, signalUpdate = True):
     input = desk.get_input(self._id)
     if self.inputBoardProperty.size == 1:
-      input._properties[self.inputBoardProperty.check_server_type] = self.data[0]
+      input._properties[self.inputBoardProperty.name] = self.data[0]
     else:
       if len(self.data) == self.inputBoardProperty.size:
-        input._properties[self.inputBoardProperty.check_server_type] = self.data
+        input._properties[self.inputBoardProperty.name] = self.data
       else:
-        if not self.inputBoardProperty.check_server_type in input._properties:
-          input._properties[self.inputBoardProperty.check_server_type] = [0] * self.inputBoardProperty.size
-        input._properties[self.inputBoardProperty.check_server_type][self.addressOffset] = self.data[0]
+        if not self.inputBoardProperty.name in input._properties:
+          input._properties[self.inputBoardProperty.name] = [0] * self.inputBoardProperty.size
+        input._properties[self.inputBoardProperty.name][self.addressOffset] = self.data[0]
     if signalUpdate:
       desk.inputsChange = True
   
@@ -68,7 +68,7 @@ class InputBoardMessage(SysExcMessage):
   def request_update_messages(self, desk: Desk) -> List[DeskMessage]:
     messages: List[InputBoardMessage] = []
     for input in desk.inputs:
-      if (input._id.group == InputSource.CONSOLE):
+      if (input._id.source == InputSource.CONSOLE):
         if self.inputBoardProperty.for_console:
           messages.append(InputBoardMessage(self.inputBoardProperty, self.data, input._id, MessageDirection.REQUEST_HOST))
       else:
@@ -79,13 +79,13 @@ class InputBoardMessage(SysExcMessage):
     if not super().check_bytes(bytes):
       return False
     address = bytes[7:11]
-    if not (address[0] == 0x03):
+    if not (address[0] == 0x00):
       return False
-    if not (address[1] <= 0x2F):
+    if not (address[1] <= 0x5A):
       return False
     if not (address[2] == self.inputBoardProperty.address[0]):
       return False
-    if (address[3] < self.inputBoardProperty.address[1] or (address[3]) >= (self.inputBoardProperty.address[1] + self.inputBoardProperty.size)):
+    if not (address[3] == self.inputBoardProperty.address[1]):
       return False
     return True
   

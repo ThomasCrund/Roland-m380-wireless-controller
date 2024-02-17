@@ -22,6 +22,7 @@ class DeskController:
     self.messageController.add_interpreters(InputBoardMessage.get_all_interpreters())
     self.messageController.add_interpreters(InputPatchbayMessage.get_all_interpreters())
     self.desk.initialise_channels()
+    self.desk.initialise_inputs()
 
     self.last_connection = None
 
@@ -37,6 +38,10 @@ class DeskController:
       while len(self.deskConnection.messages_from_host) != 0:
         message: DeskMessage = self.deskConnection.messages_from_host.pop(0)
         message.update_desk(self.desk)
+
+      # print(self.desk.inputs[3]._id.source, self.desk.inputs[3]._id.number, self.desk.inputs[3]._properties)
+      num = 3
+      # print(self.desk.channels[num]._id.group, self.desk.channels[num]._id.deskChannel, self.desk.channels[num].inputId)
 
       # Get requests from the client and send to the desk
       self.check_client_requests(server)

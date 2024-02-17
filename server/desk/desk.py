@@ -50,7 +50,7 @@ class Desk:
 
   def initialise_input_source(self, inputSource: InputSource, startId: int, endId: int):
     for i in range(startId, endId + 1):
-      self.inputs.append(Input(Input(inputSource, i)))
+      self.inputs.append(Input(InputId(inputSource, i)))
 
   def initialise_inputs(self):
     self.initialise_input_source(InputSource.CONSOLE, 1, 8)

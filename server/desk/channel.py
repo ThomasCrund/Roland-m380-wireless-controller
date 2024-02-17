@@ -145,7 +145,7 @@ class Channel:
 
     if self.inputId != None:
       channel_json['inputId'] = {
-        'inputSource': self.inputId.source,
+        'inputSource': self.inputId.source.value,
         'inputNumber': self.inputId.number
       }
 

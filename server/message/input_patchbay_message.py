@@ -16,7 +16,7 @@ class InputPatchbayMessage(SysExcMessage):
 
     address = [ 0x02, addressChannelNumber, 0, 0]
     size = [ 0, 0, 0, 1]
-
+    
     inputChannelId = 127
     if inputId.source == InputSource.REACT_A: inputChannelId = inputId.number + 0 - 1; 
     elif inputId.source == InputSource.REACT_B: inputChannelId = inputId.number + 40 - 1; 
@@ -41,12 +41,23 @@ class InputPatchbayMessage(SysExcMessage):
     address = bytes[7:11]
     data = bytes[11:-2]
 
-    newId: ChannelId = None
-    if address[1] < 0x28: newId = ChannelId(InputSource.REACT_A, address[1] - 0x00 + 1)
-    elif address[1] < 0x50: newId = ChannelId(InputSource.REACT_B, address[1] - 0x28 + 1)
-    else: newId = ChannelId(InputSource.REACT_A, address[1] - 0x50 + 1)
+    inputId: InputId = None
+    if data[0] <= 39: inputId = InputId(InputSource.REACT_A, data[0] + 1)
+    elif data[0] <= 79: inputId = InputId(InputSource.REACT_B, data[0] - 39)
+    elif data[0] <= 87: inputId = InputId(InputSource.CONSOLE, data[0] - 79)
+    elif data[0] <= 89: inputId = InputId(InputSource.STEREO_IN, data[0] - 87)
+    elif data[0] <= 91: raise IndexError("Not a valid patchbay input address: ", data[0])
+    elif data[0] <= 93: inputId = InputId(InputSource.PLAY, data[0] - 91)
+    elif data[0] <= 95: inputId = InputId(InputSource.FX1, data[0] - 93)
+    elif data[0] <= 97: inputId = InputId(InputSource.FX2, data[0] - 95)
+    elif data[0] <= 99: inputId = InputId(InputSource.FX3, data[0] - 97)
+    elif data[0] <= 101: inputId = InputId(InputSource.FX4, data[0] - 99)
+    elif data[0] <= 126: raise IndexError("Not a valid patchbay input address: ", data[0])
+    elif data[0] == 127: inputId = InputId(InputSource.NONE, 0)
 
-    return InputPatchbayMessage(self.inputBoardProperty, data, newId, MessageDirection.GET_FROM_HOST, address[3] - self.inputBoardProperty.address[1])
+    channelId = ChannelId(Group.FADER, address[1] + 1)
+
+    return InputPatchbayMessage(inputId, channelId, MessageDirection.GET_FROM_HOST)
 
   def update_desk(self, desk: Desk, signalUpdate = True):
     channel = desk.get_channel(self._id)
@@ -60,25 +71,22 @@ class InputPatchbayMessage(SysExcMessage):
 
   def request_update_messages(self, desk: Desk) -> List[DeskMessage]:
     messages: List[InputPatchbayMessage] = []
-    for input in desk.inputs:
-      if (input._id.group == InputSource.CONSOLE):
-        if self.inputBoardProperty.for_console:
-          messages.append(InputPatchbayMessage(self.inputBoardProperty, self.data, input._id, MessageDirection.REQUEST_HOST))
-      else:
-        messages.append(InputPatchbayMessage(self.inputBoardProperty, self.data, input._id, MessageDirection.REQUEST_HOST))
+    for channel in desk.channels:
+      if (channel._id.group == Group.FADER):
+        messages.append(InputPatchbayMessage(InputId(InputSource.REACT_A, 1), channel._id, MessageDirection.REQUEST_HOST))
     return messages
 
   def check_bytes(self, bytes: List[int]) -> bool:
     if not super().check_bytes(bytes):
       return False
     address = bytes[7:11]
-    if not (address[0] == 0x03):
+    if not (address[0] == 0x02):
       return False
     if not (address[1] <= 0x2F):
       return False
-    if not (address[2] == self.inputBoardProperty.address[0]):
+    if not (address[2] == 0x00):
       return False
-    if (address[3] < self.inputBoardProperty.address[1] or (address[3]) >= (self.inputBoardProperty.address[1] + self.inputBoardProperty.size)):
+    if not (address[3] == 0x00):
       return False
     return True
   
