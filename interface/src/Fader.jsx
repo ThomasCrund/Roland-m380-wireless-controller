@@ -12,7 +12,8 @@ export default function Fader({
   thumbColor = "#3581B8",
   trackColor = "#C9CAD9",
   trackWidth = 2,
-  onChange
+  onChange,
+  log
 }) {
   const valueToPosition = (num) => {
     return Math.round((num - min) / (max - min) * (height - thumbHeight))
@@ -55,21 +56,22 @@ export default function Fader({
 
   const touchMove = (e) => {
     if (touchId.id !== 0) {
-      let newPos = position + (e.touches[0].pageY - touchId.yLast) / 5
+      let newPos = position + (e.touches[0].pageY - touchId.yLast);
       if (newPos < 0) newPos = 0;
       if (newPos > (height - thumbHeight)) newPos = (height - thumbHeight);
-      console.log(newPos, valueToPosition(positionToValue(newPos)), positionToValue(newPos))
-      onChange(positionToValue(newPos))
-      setTouchId(touch => ({ yLast: e.touches[0].pageY, ...touch}))
+      onChange(positionToValue(newPos));
+      setTouchId(touch => ({ id: touch.id, yLast: e.touches[0].pageY }));
     }
   }
 
   useEffect(() => {
+    // log("Register");
     window.addEventListener('mousemove', mouseMove);
     window.addEventListener('mouseup', mouseUp);
     window.addEventListener('touchend', touchEnd);
     window.addEventListener('touchmove', touchMove)
     return () => {
+      // log("Unregister");
       window.removeEventListener('mousemove', mouseMove);
       window.removeEventListener('mouseup', mouseUp);
       window.removeEventListener('touchend', touchEnd);

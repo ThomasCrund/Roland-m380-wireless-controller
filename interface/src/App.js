@@ -7,6 +7,7 @@ import ChannelSimple from './ChannelSimple';
 function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [channels, setChannels] = useState([]);
+  const [ log, setLog ] = useState({ log: [] });
 
   useEffect(() => {
     console.log("Register")
@@ -58,6 +59,16 @@ function App() {
   //   }
   // })
 
+  const addLog = (message) => {
+    console.log("Logging:", message);
+    setLog(existingLog => {
+      console.log(existingLog);
+      return { 
+        log: [ message, ...existingLog.log ]
+      }
+    })
+  }
+
   console.log("Channels To print", channels)
   console.log(window.location.host)
 
@@ -92,10 +103,15 @@ function App() {
         {
           channels ?
           channels.map((channel, index) => 
-            <ChannelSimple key={channel.group.toString() + channel.channelNum.toString()} channel={channel} />
+            <ChannelSimple key={channel.group.toString() + channel.channelNum.toString()} channel={channel} log={addLog} />
           ) : "No Channels"
         }
       </div>
+      {/* <div style={{ height: 200, width: 700, overflow: 'scroll', backgroundColor: 'white'}}>
+        <ul>
+          {log.log.map((log) => (<li>{log}</li>))}
+        </ul>
+      </div> */}
     </div>
   );
 }
