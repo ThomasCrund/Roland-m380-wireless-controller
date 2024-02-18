@@ -2,23 +2,27 @@ import './App.css';
 // import useWebSocket, { ReadyState } from 'react-use-websocket';
 import React, { useState, useCallback, useEffect } from 'react';
 import { socket } from './socket';
-import ChannelSimple from './ChannelSimple';
+import ChannelSimple from './channel/ChannelSimple';
+import ChannelsControl from './channel/ChannelsControl';
+import ChannelSettings from './channel/ChannelSettings';
 
 function App() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [channels, setChannels] = useState([]);
+  const [ connection, setConnection] = useState({ connected: false });
+  const [ channels, setChannels ] = useState([]);
+  const [ inputs, setInputs ] = useState([]);
+  const [ channelSelected, setChannelSelected ] = useState(0)
   const [ log, setLog ] = useState({ log: [] });
 
   useEffect(() => {
     console.log("Register")
     function onConnect() {
       console.log('Connect');
-      setIsConnected(true);
+      setConnection(oldCon => ({ ...oldCon, connected: true }));
     }
 
     function onDisconnect() {
       console.log('Disconnect');
-      setIsConnected(false);
+      setConnection(oldCon => ({ ...oldCon, connected: true }));
     }
 
     function onChannels(data) {
@@ -28,6 +32,7 @@ function App() {
 
     function onInputs(data) {
       console.log('inputs', data)
+      setInputs((inputs) => data.inputs)
     }
 
     socket.on('connect', onConnect);
@@ -44,21 +49,6 @@ function App() {
     };
   }, []);
 
-  // const testMouseMove = (e) => {
-  //   setObject({
-  //     identifier: e.touches[0].identifier, 
-  //     x: e.touches[0].pageX,
-  //     y: e.touches[0].pageY
-  //   });
-  // }
-
-  // useEffect(() => {
-  //   window.addEventListener('touchstart', testMouseMove)
-  //   return () => {
-  //     window.addEventListener('touchstart', testMouseMove);
-  //   }
-  // })
-
   const addLog = (message) => {
     console.log("Logging:", message);
     setLog(existingLog => {
@@ -69,10 +59,9 @@ function App() {
     })
   }
 
-  console.log("Channels To print", channels)
-  console.log(window.location.host)
-
-  const handleClickSendMessage = useCallback(() => socket.send('Hello'), []);
+  const selectChannel = (faderNum) => {
+    setChannelSelected(faderNum)
+  }
 
   return (
     <div style={{
@@ -81,37 +70,13 @@ function App() {
       height: '100vh',
       width: '100vw'
     }}>
-      <button
-        onClick={handleClickSendMessage}
-        disabled={!isConnected}
-      >
-        Click Me to send 'Hello'
-      </button>
-      Connected: {isConnected ? "Connected" : "Not Connected"}
-      <div style={{ 
-        display: 'flex',  
-        width: '100vw - 60px',
-        overflowX: 'scroll', 
-        backgroundColor: '#F0F0FD',
-        padding: 10,
-        marginLeft: 30,
-        marginTop: 15,
-        marginBottom: 30,
-        marginRight: 30,
-        borderRadius: 25
-      }}>
-        {
-          channels ?
-          channels.map((channel, index) => 
-            <ChannelSimple key={channel.group.toString() + channel.channelNum.toString()} channel={channel} log={addLog} />
-          ) : "No Channels"
-        }
-      </div>
-      {/* <div style={{ height: 200, width: 700, overflow: 'scroll', backgroundColor: 'white'}}>
-        <ul>
-          {log.log.map((log) => (<li>{log}</li>))}
-        </ul>
-      </div> */}
+      {/* Connected: {isConnected ? "Connected" : "Not Connected"} */}
+      {
+        channelSelected !== 0 
+        ? <ChannelSettings channel={channels.find(channel => channel.group === "FADER" && channel.channelNum === channelSelected)} selectChannel={selectChannel} inputsSettings={inputs} /> 
+        : null
+      }
+      <ChannelsControl channels={channels} log={addLog} selectChannel={selectChannel} channelSelected={channelSelected} />
     </div>
   );
 }

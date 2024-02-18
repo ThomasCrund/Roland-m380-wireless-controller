@@ -34,7 +34,6 @@ export default function Fader({
       let newPos = position + e.movementY
       if (newPos < 0) newPos = 0;
       if (newPos > (height - thumbHeight)) newPos = (height - thumbHeight);
-      console.log(newPos, valueToPosition(positionToValue(newPos)), positionToValue(newPos))
       onChange(positionToValue(newPos))
 
     }
