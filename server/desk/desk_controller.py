@@ -30,6 +30,7 @@ class DeskController:
     server.send_list('channels', channels_to_JSON(self.desk.channels))
 
     messages = self.messageController.request_update_messages(self.desk)
+    self.set_default_values(messages)
     self.deskConnection._message_to_host += messages
 
     while True:
@@ -64,21 +65,26 @@ class DeskController:
         if isinstance(messageInterpreter,  ChannelMessage):
           if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
-            message.update_desk(self.desk, False)
+            if request['property'] == "name":
+              message.update_desk(self.desk, True)
+            else:
+              message.update_desk(self.desk, False)
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputBoardMessage):
           if request['type'] == "input" and request['property'] == messageInterpreter.inputBoardProperty.name:
             message = messageInterpreter.handle_client_message(InputId(InputSource(request['inputSource']), request['inputNumber']), request['value'])
-            message.update_desk(self.desk, False)
+            message.update_desk(self.desk, True)
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputPatchbayMessage):
           if request['type'] == "channel" and request['property'] == "input":
+            print(request)
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), InputId(InputSource(request['value']['inputSource']), request['value']['inputNumber']))
-            message.update_desk(self.desk, False)
+            message.update_desk(self.desk, True)
             self.deskConnection.add_message_to_host(message)
             return
+        
       print("Request not know", request)
       
 
@@ -101,4 +107,6 @@ class DeskController:
       self.last_connection = self.deskConnection.connected
       
 
-    
+  def set_default_values(self, messages: List[DeskMessage]):
+    for message in messages:
+      message.update_desk(self.desk)

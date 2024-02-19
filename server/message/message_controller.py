@@ -26,3 +26,4 @@ class MessageController:
     for messageInterpreter in self.messageInterpreters:
       messages += messageInterpreter.request_update_messages(desk)
     return messages
+  

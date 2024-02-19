@@ -1,0 +1,25 @@
+
+
+.panelsContainer {
+  display: flex;
+}
+
+.panelsContainerBrief {
+  height: 140px;
+}
+
+.panel {
+  background-color: #F0F0FD;
+  padding: 20px;
+  border-radius: 20px;
+  height: 80px;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.inputSelect {
+  font-size: 18px;
+  margin-top: 10px;
+  background-color: transparent;
+  border: transparent;
+}

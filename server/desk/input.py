@@ -34,8 +34,10 @@ class Input:
 
   def to_json(self):
     channel_json = {
-      'inputSource': self._id.source.value,
-      'inputNumber': self._id.number,
+      'inputId': {
+        'inputSource': self._id.source.value,
+        'inputNumber': self._id.number,
+      },
       'properties': self._properties
     }
 

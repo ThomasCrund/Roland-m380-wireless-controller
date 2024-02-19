@@ -85,3 +85,27 @@ export function getChannelColour(name_colour) {
       return '#FFFFFF';
   }
 }
+
+export function inputIdToName(inputId) {
+  if (inputId.inputSource === "REACT_A") {
+    return `React A - ${inputId.inputNumber}`
+  } else if (inputId.inputSource === "REACT_B") {
+    return `React B - ${inputId.inputNumber}`
+  } else if (inputId.inputSource === "CONSOLE") {
+    return `Console - ${inputId.inputNumber}`
+  } else if (inputId.inputSource === "FX1") {
+    return `FX 1 - ${inputId.inputNumber === 1 ? 'L' : 'R'}`
+  } else if (inputId.inputSource === "FX2") {
+    return `FX 2 - ${inputId.inputNumber === 1 ? 'L' : 'R'}`
+  } else if (inputId.inputSource === "FX3") {
+    return `FX 3 - ${inputId.inputNumber === 1 ? 'L' : 'R'}`
+  } else if (inputId.inputSource === "FX4") {
+    return `FX 4 - ${inputId.inputNumber === 1 ? 'L' : 'R'}`
+  } else if (inputId.inputSource === "STEREO_IN") {
+    return `Stereo In - ${inputId.inputNumber === 1 ? 'L' : 'R'}`
+  } else if (inputId.inputSource === "PLAY") {
+    return `Play - ${inputId.inputNumber === 1 ? 'L' : 'R'}`
+  } else if (inputId.inputSource === "NONE") {
+    return `None`
+  }
+}

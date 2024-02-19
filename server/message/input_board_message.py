@@ -92,10 +92,10 @@ class InputBoardMessage(SysExcMessage):
   def get_all_interpreters() -> InputBoardMessage:
     id = InputId(InputSource.REACT_A, 1)
     messages = [
-      InputBoardMessage(InputBoardProperty([0x00, 0x01], 1, "gain", (0, 37)), [], id, MessageDirection.INTERPRETER),
-      InputBoardMessage(InputBoardProperty([0x00, 0x02], 1, "pad", (0, 1)), [], id, MessageDirection.INTERPRETER),
-      InputBoardMessage(InputBoardProperty([0x00, 0x03], 1, "phantom", (0, 1)), [], id, MessageDirection.INTERPRETER),
-      InputBoardMessage(InputBoardProperty([0x00, 0x04], 1, "link", (0, 1), False), [], id, MessageDirection.INTERPRETER),
+      InputBoardMessage(InputBoardProperty([0x00, 0x01], 1, "gain", (0, 37)), [0], id, MessageDirection.INTERPRETER),
+      InputBoardMessage(InputBoardProperty([0x00, 0x02], 1, "pad", (0, 1)), [0], id, MessageDirection.INTERPRETER),
+      InputBoardMessage(InputBoardProperty([0x00, 0x03], 1, "phantom", (0, 1)), [0], id, MessageDirection.INTERPRETER),
+      InputBoardMessage(InputBoardProperty([0x00, 0x04], 1, "link", (0, 1), False), [0], id, MessageDirection.INTERPRETER),
     ]
 
     return messages

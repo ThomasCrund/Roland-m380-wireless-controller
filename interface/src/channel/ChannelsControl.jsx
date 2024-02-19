@@ -23,7 +23,6 @@ export default function ChannelsControl({
       {
         channels ?
         channels.map((channel, index) => {
-          console.log(channel.channelNum, channelSelected, channel.channelNum === channelSelected)
           return <ChannelSimple key={channel.group.toString() + channel.channelNum.toString()} selected={channel.channelNum === channelSelected} channel={channel} log={log} selectChannel={selectChannel} />
         }) : "No Channels"
       }
