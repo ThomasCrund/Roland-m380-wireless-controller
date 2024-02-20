@@ -65,10 +65,7 @@ class DeskController:
         if isinstance(messageInterpreter,  ChannelMessage):
           if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
-            if request['property'] == "name":
-              message.update_desk(self.desk, True)
-            else:
-              message.update_desk(self.desk, False)
+            message.update_desk(self.desk, request['update_itself'])
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputBoardMessage):

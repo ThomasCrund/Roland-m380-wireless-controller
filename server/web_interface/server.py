@@ -42,9 +42,9 @@ class Server:
     print(sid + ' received message: ' + msg)
     self.socketio.send(msg, to=sid)
 
-  def set_channel_property(self, property, group, channelNum, value):
+  def set_channel_property(self, property, group, channelNum, value, update_itself = False):
     print("Set" + property, group, channelNum, value)
-    self.client_requests.append({ 'type': 'channel', 'property': property, 'group': group, 'channelNum': channelNum, 'value': value})
+    self.client_requests.append({ 'type': 'channel', 'property': property, 'group': group, 'channelNum': channelNum, 'value': value, 'update_itself': update_itself})
 
   def connect(self):
     print("new connection", request.args)
