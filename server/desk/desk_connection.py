@@ -1,20 +1,19 @@
 import mido
-import threading
-import time
 from typing import List
 import rtmidi._rtmidi as rtmidi
 
 from message import DeskMessage, MessageController
 from desk.channel import Group, ChannelId
-import message
 
 class DeskConnection():
-  def __init__(self, inputPortName: str = None, outputPortName: str = None) -> None:
+  def __init__(self, inputPortName: str = None, outputPortName: str = None, debug = 3) -> None:
     self.inputPortName = inputPortName
     self.outputPortName = outputPortName
 
     self.input_port = None
     self.output_port = None
+
+    self.debug = debug
 
     self.mc = MessageController()
 
@@ -30,27 +29,27 @@ class DeskConnection():
     if self.input_port == None:
       try:
         self.input_port = mido.open_input(self.inputPortName, callback=self.message_callback)
-        print("Input Connected")
+        if self.debug >= 1: print("Desk Input Connected")
       except IOError as err:
         if (str(err) == "no ports available"):
-          print("Input Not Connected")
+          if self.debug >= 3: print("Input Not Connected")
           self.input_port = None
           connected = False
         else:
-          print("Input connection error: ", err)
+          if self.debug >= 3: print("Input connection error: ", err)
           connected = False
   
     if self.output_port == None:
       try:
         self.output_port = mido.open_output(self.outputPortName)
-        print("Output Connected")
+        if self.debug >= 1: print("Desk Output Connected")
       except IOError as err:
         if (str(err) == f"unknown port '{self.outputPortName}'"):
-          print("Output Not Connected")
+          if self.debug >= 3: print("Output Not Connected")
           self.output_port = None
           connected = False
         else:
-          print("Output connection error: ", err)
+          if self.debug >= 3: print("Output connection error: ", err)
           connected = False
 
     self._connected = connected
@@ -66,7 +65,7 @@ class DeskConnection():
         self.output_port.send(message.get_msg())
         self._message_to_host.remove(message)
       except rtmidi.SystemError as err:
-        print("Error: ", err)
+        if self.debug >= 2: print("Error: ", err)
         self.close_ports()
         return
 

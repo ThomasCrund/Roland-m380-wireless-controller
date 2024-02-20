@@ -48,6 +48,7 @@ class ChannelMessage(SysExcMessage):
             channel._properties[self.channelProperty.check_server_type][self.addressOffset] = self.data[0]
     if signalUpdate:
       desk.channelChange = True
+      desk.channelsChangeUser = self.user
   
   def handle_client_message(self, channelId: ChannelId, data: List[int]):
     if not isinstance(data, List):

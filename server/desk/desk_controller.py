@@ -8,7 +8,8 @@ from message.message_controller import MessageController
 from message.channel_message import ChannelMessage
 from message.input_board_message import InputBoardMessage
 from message.input_patchbay_message import InputPatchbayMessage
-from web_interface import Server
+from web_interface.server import Server
+import time
 
 class DeskController:
 
@@ -65,7 +66,8 @@ class DeskController:
         if isinstance(messageInterpreter,  ChannelMessage):
           if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
-            message.update_desk(self.desk, request['update_itself'])
+            message.user = '' if request['update_itself'] else request['user']
+            message.update_desk(self.desk, True, )
             self.deskConnection.add_message_to_host(message)
             return
         if isinstance(messageInterpreter,  InputBoardMessage):
@@ -87,16 +89,22 @@ class DeskController:
 
   def update_server(self, server: Server):
 
-    # Check desk
-    if self.desk.channelChange:
-      print("Update Clients: Channels")
-      server.send_list("channels", channels_to_JSON(self.desk.channels))
-      self.desk.channelChange = False
+    timeNow = (time.time() * 1000)
 
-    if self.desk.inputsChange:
+    # Check desk
+    if self.desk.channelChange and timeNow > self.desk.channelsUpdateLast + 50:
+      print("Update Clients: Channels")
+      server.send_list("channels", channels_to_JSON(self.desk.channels), self.desk.channelsChangeUser)
+      self.desk.channelsChangeUser = ""
+      self.desk.channelChange = False
+      self.desk.channelsUpdateLast = timeNow
+
+    if self.desk.inputsChange and timeNow > self.desk.inputsUpdateLast + 50:
       print("Update Clients: Inputs")
-      server.send_list("inputs", inputs_to_JSON(self.desk.inputs))
+      server.send_list("inputs", inputs_to_JSON(self.desk.inputs), self.desk.inputsChangeUser)
+      self.desk.inputsChangeUser = ""
       self.desk.inputsChange = False
+      self.desk.inputsUpdateLast = timeNow
     
     # Check connection
     if (self.deskConnection.connected != self.last_connection) or self.last_connection == None:

@@ -15,8 +15,8 @@ function App() {
 
   useEffect(() => {
     console.log("Register")
-    function onConnect() {
-      console.log('Connect');
+    function onConnect(data) {
+      console.log('Connect', socket.id, socket);
       setConnection(oldCon => ({ ...oldCon, connected: true }));
     }
 

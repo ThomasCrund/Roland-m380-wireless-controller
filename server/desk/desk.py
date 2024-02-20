@@ -8,7 +8,12 @@ class Desk:
     self.channels: List[Channel] = []
     self.inputs: List[Input] = []
     self.channelChange = False
+    self.channelsChangeUser = ""
+    self.channelsUpdateLast = 0
+
     self.inputsChange = False
+    self.inputsChangeUser = ""
+    self.inputsUpdateLast = 0
 
   def get_channel(self, channelId: ChannelId):
 

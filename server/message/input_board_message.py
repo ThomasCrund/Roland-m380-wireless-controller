@@ -59,6 +59,7 @@ class InputBoardMessage(SysExcMessage):
         input._properties[self.inputBoardProperty.name][self.addressOffset] = self.data[0]
     if signalUpdate:
       desk.inputsChange = True
+      desk.inputsChangeUser = self.user
   
   def handle_client_message(self, id: InputId, data: List[int]):
     if not isinstance(data, List):

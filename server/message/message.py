@@ -26,6 +26,7 @@ class DeskMessage(ABC):
   def __init__(self, dir: MessageDirection, messageType: MessageType):
     self.dir = dir
     self.messageType = messageType
+    self.user = ""
 
   def get_msg(self):
     return mido.Message.from_bytes(self.bytes())
