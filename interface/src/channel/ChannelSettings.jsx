@@ -16,7 +16,7 @@ export default function ChannelSettings({
   let channelColour = getChannelColour(channel.properties.name_color) ?? 0;
 
   useEffect(() => {
-    let newName = channel.properties.name.map(a => String.fromCharCode(a)).join('');
+    let newName = channel.properties.name.map(a => String.fromCharCode(a)).join('').trimEnd();
     setName(newName);
   }, [channel.properties.name])
 

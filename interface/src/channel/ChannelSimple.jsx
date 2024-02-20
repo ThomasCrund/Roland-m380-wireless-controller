@@ -70,7 +70,7 @@ export default function ChannelSimple(props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: 80, alignItems: 'center' }}>
       <ChannelSelectButton onClick={selectChannel} number={props.channel.channelNum} selected={props.selected} colour={channelColour} />
-      <span style={{ color: channelColour, marginTop: 10 }}>{name.map(a => String.fromCharCode(a))}</span>
+      <span style={{ color: channelColour, marginTop: 10, height: 21 }}>{name.map(a => String.fromCharCode(a))}</span>
       <div style={muteButtonStyles} onClick={changeMute}>Mute</div>
 
 
