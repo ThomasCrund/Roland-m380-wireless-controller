@@ -64,6 +64,7 @@ class InputPatchbayMessage(SysExcMessage):
     channel.inputId = self.inputId
     if signalUpdate:
       desk.channelChange = True
+      desk.channelsChangeUser = self.user
   
   def handle_client_message(self, id: ChannelId, data: InputId):
     

@@ -42,16 +42,13 @@ class Desk:
   def initialise_group(self, group: Group, startId: int, endId: int):
     for i in range(startId, endId + 1):
       channel = Channel(ChannelId(group, i))
-      if group == Group.FADER:
-        channel.set_property('fader', [64, 0])
-        channel.set_property('mute', 1)
-        channel.set_property('name', [65, 65, 65, 65, 65, 65])
-        channel.set_property('name_color', i % 7)
       self.channels.append(channel)
     self.channelChange = True
 
   def initialise_channels(self):
     self.initialise_group(Group.FADER, 1, 48)
+    self.initialise_group(Group.MAIN, 1, 3)
+    self.initialise_group(Group.AUX, 1, 16)
 
   def initialise_input_source(self, inputSource: InputSource, startId: int, endId: int):
     for i in range(startId, endId + 1):
