@@ -4,6 +4,7 @@ import { getChannelColour, inputIdToName } from './ChannelUtil';
 import './ChannelSettings.css'
 import { socket } from '../socket';
 import NameInput from './panel/NameInput';
+import InputBoardPanel from './panel/InputBoardPanel';
 
 export default function ChannelSettings({
   channel,
@@ -15,9 +16,7 @@ export default function ChannelSettings({
   return (
     <div className='panelsContainer panelsContainerBrief'>
       <NameInput channel={channel} inputsSettings={inputsSettings} selectChannel={selectChannel} />
-      <div className='panel'>
-        Input Panel
-      </div>
+      <InputBoardPanel  channel={channel} inputsSettings={inputsSettings} />
       <div className='panel'>
         Basic Controls
       </div>

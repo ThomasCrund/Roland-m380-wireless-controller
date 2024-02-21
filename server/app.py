@@ -9,7 +9,7 @@ class App:
 
   def __init__(self):
     self.desk = Desk()
-    self.deskConnection = DeskConnection("3- RSS M-400 0", "3- RSS M-400 1", debug=1)
+    self.deskConnection = DeskConnection("3- RSS M-400 1", "3- RSS M-400 2", debug=3)
     self.deskController = DeskController(self.desk, self.deskConnection)
     self.server: Server = Server(self.deskController.run)
 

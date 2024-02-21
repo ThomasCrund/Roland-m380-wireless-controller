@@ -1,5 +1,6 @@
 import mido
 from typing import List
+
 import rtmidi._rtmidi as rtmidi
 
 from message import DeskMessage, MessageController

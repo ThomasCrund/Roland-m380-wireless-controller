@@ -61,28 +61,30 @@ class DeskController:
 
   def check_client_requests(self, server: Server):
     while len(server.client_requests) != 0:
+      print(len(server.client_requests))
       request = server.client_requests.pop(0)
       for messageInterpreter in self.messageController.messageInterpreters:
         if isinstance(messageInterpreter,  ChannelMessage):
           if request['type'] == "channel" and request['property'] == messageInterpreter.channelProperty.check_server_type:
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), request['value'])
             message.user = '' if request['update_itself'] else request['user']
-            message.update_desk(self.desk, True, )
+            message.update_desk(self.desk, True)
             self.deskConnection.add_message_to_host(message)
-            return
+            break
         if isinstance(messageInterpreter,  InputBoardMessage):
           if request['type'] == "input" and request['property'] == messageInterpreter.inputBoardProperty.name:
             message = messageInterpreter.handle_client_message(InputId(InputSource(request['inputSource']), request['inputNumber']), request['value'])
+            message.user = '' if request['update_itself'] else request['user']
             message.update_desk(self.desk, True)
             self.deskConnection.add_message_to_host(message)
-            return
+            break
         if isinstance(messageInterpreter,  InputPatchbayMessage):
           if request['type'] == "channel" and request['property'] == "input":
             print(request)
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), InputId(InputSource(request['value']['inputSource']), request['value']['inputNumber']))
             message.update_desk(self.desk, True)
             self.deskConnection.add_message_to_host(message)
-            return
+            break
         
       print("Request not know", request)
       

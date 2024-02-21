@@ -109,3 +109,11 @@ export function inputIdToName(inputId) {
     return `None`
   }
 }
+
+export function gainToDb(num, pad) {
+  if (pad === 1) {
+    return -Math.round(num) + 10
+  } else {
+    return -Math.round(num) - 10
+  }
+}

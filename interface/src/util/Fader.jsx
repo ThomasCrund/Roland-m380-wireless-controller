@@ -79,8 +79,6 @@ export default function Fader({
     }
   })
 
-
-
   return (
     <div className='fader-container'
          style={{

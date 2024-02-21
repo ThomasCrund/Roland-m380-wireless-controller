@@ -16,6 +16,7 @@ class Server:
     self.socketio.on_event('message', handler=self.handle_message)
     self.socketio.on_event('connect', handler=self.connect)
     self.socketio.on_event('channel-set', handler=self.set_channel_property)
+    self.socketio.on_event('input-set', handler=self.set_input_property)
     # self.socketio.on_event('my_message', handler=self.my_message)
     self.threads = []
     self.controller_callback = controller_callback
@@ -47,8 +48,12 @@ class Server:
     self.socketio.send(msg, to=sid)
 
   def set_channel_property(self, property, group, channelNum, value, update_itself = False):
-    print("Set" + property, group, channelNum, value, request.sid)
+    print("Set channel " + property, group, channelNum, value, request.sid)
     self.client_requests.append({ 'type': 'channel', 'property': property, 'group': group, 'channelNum': channelNum, 'value': value, 'update_itself': update_itself, 'user': request.sid})
+
+  def set_input_property(self, property, inputSource, inputNumber, value, update_itself = False):
+    print("Set input " + property, inputSource, inputNumber, value, request.sid)
+    self.client_requests.append({ 'type': 'input', 'property': property, 'inputSource': inputSource, 'inputNumber': inputNumber, 'value': value, 'update_itself': update_itself, 'user': request.sid})
 
   def connect(self):
     print("new connection", request.sid, self.user_controller.getSidsMinusOne(""))
