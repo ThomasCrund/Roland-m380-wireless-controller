@@ -5,9 +5,10 @@ import { socket } from './socket';
 import ChannelSimple from './channel/ChannelSimple';
 import ChannelsControl from './channel/ChannelsControl';
 import ChannelSettings from './channel/ChannelSettings';
+import StatusBar from './layout/StatusBar'
 
 function App() {
-  const [ connection, setConnection] = useState({ connected: false });
+  const [ status, setStatus ] = useState({ connected: false });
   const [ channels, setChannels ] = useState([]);
   const [ inputs, setInputs ] = useState([]);
   const [ channelSelected, setChannelSelected ] = useState(0)
@@ -17,12 +18,12 @@ function App() {
     console.log("Register")
     function onConnect(data) {
       console.log('Connect', socket.id, socket);
-      setConnection(oldCon => ({ ...oldCon, connected: true }));
+      setStatus(oldCon => ({ ...oldCon, connected: true }));
     }
 
     function onDisconnect() {
       console.log('Disconnect');
-      setConnection(oldCon => ({ ...oldCon, connected: true }));
+      setStatus(oldCon => ({ ...oldCon, connected: true }));
     }
 
     function onChannels(data) {
@@ -35,10 +36,20 @@ function App() {
       setInputs((inputs) => data.inputs)
     }
 
+    function onStatus(data) {
+      console.log('status', data)
+
+      setStatus(oldStatus => ({
+        ...oldStatus,
+        deskConnected: data.deskConnected
+      }))
+    }
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('channels', onChannels);
     socket.on('inputs', onInputs);
+    socket.on('status', onStatus);
 
     return () => {
       console.log("Deregister")
@@ -46,6 +57,7 @@ function App() {
       socket.off('disconnect', onDisconnect);
       socket.off('faders', onChannels);
       socket.off('inputs', onInputs);
+      socket.off('status', onStatus);
     };
   }, []);
 
@@ -71,6 +83,7 @@ function App() {
       width: '100vw'
     }}>
       {/* Connected: {isConnected ? "Connected" : "Not Connected"} */}
+      <StatusBar status={status}/> 
       {
         channelSelected !== 0 
         ? <ChannelSettings channel={channels.find(channel => channel.group === "FADER" && channel.channelNum === channelSelected)} selectChannel={selectChannel} inputsSettings={inputs} /> 

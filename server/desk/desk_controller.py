@@ -61,7 +61,7 @@ class DeskController:
 
   def check_client_requests(self, server: Server):
     while len(server.client_requests) != 0:
-      print(len(server.client_requests))
+      # print(len(server.client_requests))
       request = server.client_requests.pop(0)
       for messageInterpreter in self.messageController.messageInterpreters:
         if isinstance(messageInterpreter,  ChannelMessage):
@@ -80,13 +80,13 @@ class DeskController:
             break
         if isinstance(messageInterpreter,  InputPatchbayMessage):
           if request['type'] == "channel" and request['property'] == "input":
-            print(request)
+            # print(request)
             message = messageInterpreter.handle_client_message(ChannelId(Group(request['group']), request['channelNum']), InputId(InputSource(request['value']['inputSource']), request['value']['inputNumber']))
             message.update_desk(self.desk, True)
             self.deskConnection.add_message_to_host(message)
             break
         
-      print("Request not know", request)
+      # print("Request not know", request)
       
 
   def update_server(self, server: Server):
@@ -95,14 +95,14 @@ class DeskController:
 
     # Check desk
     if self.desk.channelChange and timeNow > self.desk.channelsUpdateLast + 50:
-      print("Update Clients: Channels")
+      # print("Update Clients: Channels")
       server.send_list("channels", channels_to_JSON(self.desk.channels), self.desk.channelsChangeUser)
       self.desk.channelsChangeUser = ""
       self.desk.channelChange = False
       self.desk.channelsUpdateLast = timeNow
 
     if self.desk.inputsChange and timeNow > self.desk.inputsUpdateLast + 50:
-      print("Update Clients: Inputs")
+      # print("Update Clients: Inputs")
       server.send_list("inputs", inputs_to_JSON(self.desk.inputs), self.desk.inputsChangeUser)
       self.desk.inputsChangeUser = ""
       self.desk.inputsChange = False
@@ -110,6 +110,7 @@ class DeskController:
     
     # Check connection
     if (self.deskConnection.connected != self.last_connection) or self.last_connection == None:
+      # print("Updating Desk Connection status")
       server.send_desk_connected(self.deskConnection.connected)
       self.last_connection = self.deskConnection.connected
       

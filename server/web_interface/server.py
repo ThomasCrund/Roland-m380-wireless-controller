@@ -22,9 +22,11 @@ class Server:
     self.controller_callback = controller_callback
 
     self.listsJSON = {}
-    self.desk_connected = False
     self.client_requests = []
     self.user_controller = UserController()
+    self.status = {
+      "deskConnected": False
+    }
 
   def run(self):
     self.threads.append(self.socketio.start_background_task(self.background_task))
@@ -40,26 +42,30 @@ class Server:
       self.socketio.emit(list_name, channels_JSON, to=sid)
 
   def send_desk_connected(self, connected: bool):
-    self.desk_connected = connected
-    self.socketio.emit('desk_connected', connected)
+    self.status["deskConnected"] = connected
+    self.send_status()
 
   def handle_message(self, sid, msg):
-    print(sid + ' received message: ' + msg)
+    # print(sid + ' received message: ' + msg)
     self.socketio.send(msg, to=sid)
 
   def set_channel_property(self, property, group, channelNum, value, update_itself = False):
-    print("Set channel " + property, group, channelNum, value, request.sid)
+    # print("Set channel " + property, group, channelNum, value, request.sid)
     self.client_requests.append({ 'type': 'channel', 'property': property, 'group': group, 'channelNum': channelNum, 'value': value, 'update_itself': update_itself, 'user': request.sid})
 
   def set_input_property(self, property, inputSource, inputNumber, value, update_itself = False):
-    print("Set input " + property, inputSource, inputNumber, value, request.sid)
+    # print("Set input " + property, inputSource, inputNumber, value, request.sid)
     self.client_requests.append({ 'type': 'input', 'property': property, 'inputSource': inputSource, 'inputNumber': inputNumber, 'value': value, 'update_itself': update_itself, 'user': request.sid})
 
+  def send_status(self):
+    self.socketio.emit('status', self.status)
+
   def connect(self):
-    print("new connection", request.sid, self.user_controller.getSidsMinusOne(""))
+    # print("new connection", request.sid, self.user_controller.getSidsMinusOne(""))
     self.user_controller.addUser(request.sid)
-    print("new connection", request.sid, self.user_controller.getSidsMinusOne(""))
+    # print("new connection", request.sid, self.user_controller.getSidsMinusOne(""))
     for listName in self.listsJSON:
       self.socketio.emit(listName, self.listsJSON[listName], to=request.sid)
-    self.socketio.emit('desk_connected', self.desk_connected)
+    self.send_status()
+    
     

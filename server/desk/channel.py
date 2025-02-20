@@ -104,6 +104,9 @@ class ChannelId:
     
     return ChannelId(group, deskChannel)
 
+  def __str__(self):
+    return str(self.group.value) + ":" + str(self.deskChannel)
+
 
 class Channel:
   def __init__(self, id: ChannelId):
